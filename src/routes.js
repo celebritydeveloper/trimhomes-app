@@ -1,5 +1,6 @@
 import Home from './assets/vue/pages/home.vue';
 import AboutPage from './assets/vue/pages/about.vue';
+import SplashPage from './assets/vue/pages/splash.vue';
 import FormPage from './assets/vue/pages/form.vue';
 import DynamicRoutePage from './assets/vue/pages/dynamic-route.vue';
 
@@ -16,6 +17,10 @@ export default [
   {
     path: '/about/',
     component: AboutPage
+  },
+  {
+    path: '/splash/',
+    component: SplashPage
   },
   {
     path: '/form/',

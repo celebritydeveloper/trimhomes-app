@@ -28,6 +28,9 @@
       <f7-list-item link="/about/" title="About" panel-close>
         <f7-icon slot="media" ios="f7:info" md="material:info"></f7-icon>
       </f7-list-item>
+      <f7-list-item link="/splash/" title="Splash" panel-close>
+        <f7-icon slot="media" ios="f7:info" md="material:info"></f7-icon>
+      </f7-list-item>
       <f7-list-item link="/form/" title="Form" panel-close>
         <f7-icon slot="media" icon="fas fa-id-card-alt fa-fw"></f7-icon>
       </f7-list-item>
