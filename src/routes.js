@@ -1,6 +1,8 @@
 import Home from './assets/vue/pages/home.vue';
+import HomePage from './assets/vue/pages/home1.vue';
 import AboutPage from './assets/vue/pages/about.vue';
 import SplashPage from './assets/vue/pages/splash.vue';
+import IndexPage from './assets/vue/pages/index.vue';
 import FormPage from './assets/vue/pages/form.vue';
 import DynamicRoutePage from './assets/vue/pages/dynamic-route.vue';
 
@@ -15,12 +17,20 @@ export default [
     component: Home
   },
   {
+    path: '/home1/',
+    component: HomePage
+  },
+  {
     path: '/about/',
     component: AboutPage
   },
   {
     path: '/splash/',
     component: SplashPage
+  },
+  {
+    path: '/index/',
+    component: IndexPage
   },
   {
     path: '/form/',
