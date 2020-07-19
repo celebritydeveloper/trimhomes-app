@@ -1,7 +1,7 @@
 <template>
   <f7-page>
   <f7-navbar class="home--nav">
-    <f7-navbar back-link="Confirm your email" back-link-show-text></f7-navbar>
+    <f7-navbar back-link="Confirm your email" no-shadow no-hairline back-link-show-text></f7-navbar>
       <f7-nav-right>
         <img :src="logo" class="logo">
       </f7-nav-right>

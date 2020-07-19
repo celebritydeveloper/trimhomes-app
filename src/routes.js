@@ -7,6 +7,7 @@ import RegisterPage from './assets/vue/pages/register.vue';
 import SignInPage from './assets/vue/pages/signin.vue';
 import EmailConfirmPage from './assets/vue/pages/confirm-email.vue';
 import ForgotPasswordPage from './assets/vue/pages/forgot-password.vue';
+import ProjectSinglePage from './assets/vue/pages/project-single.vue';
 
 import DynamicRoutePage from './assets/vue/pages/dynamic-route.vue';
 
@@ -51,6 +52,10 @@ export default [
   {
     path: '/forgot-password/',
     component: ForgotPasswordPage
+  },
+  {
+    path: '/project-single/',
+    component: ProjectSinglePage
   },
   {
     path: '/dynamic-route/blog/:blogId/post/:postId/',

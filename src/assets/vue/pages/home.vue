@@ -28,6 +28,9 @@
     <f7-list-item link="/home1/" title="Home" panel-close>
         <f7-icon slot="media" ios="f7:info" md="material:info"></f7-icon>
       </f7-list-item>
+      <f7-list-item link="/project-single/" title="Project Single" panel-close>
+        <f7-icon slot="media" ios="f7:info" md="material:info"></f7-icon>
+      </f7-list-item>
       <f7-list-item link="/about/" title="About" panel-close>
         <f7-icon slot="media" ios="f7:info" md="material:info"></f7-icon>
       </f7-list-item>
