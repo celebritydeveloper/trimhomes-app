@@ -3,7 +3,11 @@ import HomePage from './assets/vue/pages/home1.vue';
 import AboutPage from './assets/vue/pages/about.vue';
 import SplashPage from './assets/vue/pages/splash.vue';
 import IndexPage from './assets/vue/pages/index.vue';
-import FormPage from './assets/vue/pages/form.vue';
+import RegisterPage from './assets/vue/pages/register.vue';
+import SignInPage from './assets/vue/pages/signin.vue';
+import EmailConfirmPage from './assets/vue/pages/confirm-email.vue';
+import ForgotPasswordPage from './assets/vue/pages/forgot-password.vue';
+
 import DynamicRoutePage from './assets/vue/pages/dynamic-route.vue';
 
 import PanelLeftPage from './assets/vue/pages/panel-left.vue';
@@ -33,8 +37,20 @@ export default [
     component: IndexPage
   },
   {
-    path: '/form/',
-    component: FormPage
+    path: '/register/',
+    component: RegisterPage
+  },
+  {
+    path: '/sign/',
+    component: SignInPage
+  },
+  {
+    path: '/confirm-email/',
+    component: EmailConfirmPage
+  },
+  {
+    path: '/forgot-password/',
+    component: ForgotPasswordPage
   },
   {
     path: '/dynamic-route/blog/:blogId/post/:postId/',

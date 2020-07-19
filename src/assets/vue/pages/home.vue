@@ -37,7 +37,16 @@
       <f7-list-item link="/index/" title="Index" panel-close>
         <f7-icon slot="media" ios="f7:info" md="material:info"></f7-icon>
       </f7-list-item>
-      <f7-list-item link="/form/" title="Sign In" panel-close>
+      <f7-list-item link="/register/" title="Register" panel-close>
+        <f7-icon slot="media" icon="fas fa-id-card-alt fa-fw"></f7-icon>
+      </f7-list-item>
+      <f7-list-item link="/signin/" title="Sign In" panel-close>
+        <f7-icon slot="media" icon="fas fa-id-card-alt fa-fw"></f7-icon>
+      </f7-list-item>
+      <f7-list-item link="/confirm-email/" title="Confirm Email" panel-close>
+        <f7-icon slot="media" icon="fas fa-id-card-alt fa-fw"></f7-icon>
+      </f7-list-item>
+      <f7-list-item link="/forgot-password/" title="Forgot Password" panel-close>
         <f7-icon slot="media" icon="fas fa-id-card-alt fa-fw"></f7-icon>
       </f7-list-item>
       <f7-list-item link="/dynamic-route/blog/11/post/23/" title="Dynamic Route" panel-close>
