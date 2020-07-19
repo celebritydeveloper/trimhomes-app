@@ -1,9 +1,7 @@
 <template>
   <f7-page class="home">
     <f7-navbar class="home--nav">
-    <f7-nav-left>
-        Home
-      </f7-nav-left>
+    <f7-navbar back-link="Back" back-link-show-text></f7-navbar>
       <f7-nav-right>
         <img :src="logo" class="logo">
       </f7-nav-right>
@@ -29,63 +27,81 @@
   </f7-panel>
 
     <f7-page-content class="confirm">
-    <div class="top-bar">
-      Welcome, Timi
-    </div>
-    <f7-tabs>
-      <f7-tab id="tab-1" class="page-conten" tab-active>
-        <f7-list  media-list class="listing">
-            <f7-list-item 
-                class="listing-item"
-                link="#"
-                title="5 BHK Luxury House"
-                subtitle="£ 192,000"
-                text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+
+        <f7-swiper pagination>
+            <f7-swiper-slide class="slide-img"><img :src="slide"></f7-swiper-slide>
+            <f7-swiper-slide class="slide-img"><img :src="home"></f7-swiper-slide>
+            <f7-swiper-slide class="slide-img"><img :src="slide"></f7-swiper-slide>
+        </f7-swiper>
+
+        <div class="project-top">
+            <p class="project-type">
+                5 BHK Luxury House
+                <span class="project-location">Lea Valley Country Park</span>
+                <span class="project-price">£ 192,000</span>
+            </p>
+            <p class="register--btn" sheet-open=".demo-sheet-swipe-to-close">Make Request</p>
+        </div>
+
+        <f7-block class="project-icons">
+        <f7-row>
+            <f7-col>
+                <f7-card class="info-card">
+                    <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:credit_card"></f7-icon>
+                    <p class="info-text">3 Baths</p>
+                </f7-card>
+            </f7-col>
+            <f7-col>
+                <f7-card class="info-card">
+                    <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:credit_card"></f7-icon>
+                    <p class="info-text">3 Toilets</p>
+                </f7-card>
+            </f7-col>
+            <f7-col>
+                <f7-card class="info-card">
+                    <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:credit_card"></f7-icon>
+                    <p class="info-text">3 Rooms</p>
+                </f7-card>
+            </f7-col>
+            <f7-col>
+                <f7-card class="info-card">
+                    <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:credit_card"></f7-icon>
+                    <p class="info-text">Garage</p>
+                </f7-card>
+            </f7-col>
+        </f7-row>
+        </f7-block>
+
+        <f7-block class="project-info-block">
+             <div class="project-info">
+                <p class="project-info-title">Tenure</p>
+                <p class="project-info-text">Freehold</p>
+            </div>
+            <div class="project-info">
+                <p class="project-info-title">Administration Fees</p>
+                <p class="project-info-text">Administration Charge - Purchasers will be required to pay an administration fee of £1,200 inc VAT</p>
+            </div>
+            <div class="project-info">
+                <p class="project-info-title">Tenancy</p>
+                <p class="project-info-text">The property is subject to an Assured Shorthold Tenancy for a term of 18 months commencing 10th April 2019 at a rent of £1,300 per calendar month.</p>
+            </div>
+        </f7-block>
+
+        <!-- Swipe to close demo sheet -->
+        <f7-sheet
+            class="demo-sheet-swipe-to-close"
+            style="height:auto; --f7-sheet-bg-color: #fff;"
+            swipe-to-close
+            backdrop
             >
-                <img slot="media" :src="home" height="80" width="80" />
-            </f7-list-item>
-            <f7-list-item
-                class="listing-item"
-                link="#"
-                title="5 Park Lane"
-                subtitle="£ 150,000"
-                text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-            >
-                <img slot="media" :src="home" height="80" width="80" />
-            </f7-list-item>
-            </f7-list>
-            <f7-card class="info-card">
-              <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:credit_card"></f7-icon>
-              <p class="info-title">Part-purchase a property</p>
-              <p class="info-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore e</p>
-              <f7-button class="info-btn">Learn How</f7-button>
-            </f7-card>
-            <f7-card class="info-card">
-              <f7-icon class="info-icon" ios="f7:person_circle" aurora="f7:person_circle" md="material:account_circle"></f7-icon>
-              <p class="info-title">Update your details</p>
-              <p class="info-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore e</p>
-              <f7-button class="info-btn">Update Now</f7-button>
-            </f7-card>
-      </f7-tab>
-      <f7-tab id="tab-2" class="page-content">
-        <f7-block>
-          <p>Tab 2 content</p>
-          ...
-        </f7-block>
-      </f7-tab>
-      <f7-tab id="tab-3" class="page-content">
-        <f7-block>
-          <p>Tab 3 content</p>
-          ...
-        </f7-block>
-      </f7-tab>
-      <f7-tab id="tab-4" class="page-content">
-        <f7-block>
-          <p>Tab 4 content</p>
-          ...
-        </f7-block>
-      </f7-tab>
-    </f7-tabs>
+            <f7-page-content>
+                <f7-block-title large>Hello!</f7-block-title>
+                <f7-block>
+                <p>Eaque maiores ducimus, impedit unde culpa qui, explicabo accusamus, non vero corporis voluptatibus similique odit ab...</p>
+                </f7-block>
+            </f7-page-content>
+        </f7-sheet>
+        
     </f7-page-content>
 
 
@@ -94,15 +110,20 @@
 <script>
 import logo from '../../images/logo-nav.png';
 import home from '../../images/home.jpg';
+import slide from '../../images/props.jpg';
+import {f7Sheet } from 'framework7-vue';
 export default {
     data() {
     return {
       logo,
       home,
+      slide,
       isBottom: true,
     }
   },
-  components: {}
+  components: {
+      f7Sheet,
+  }
 };
 </script>
 
@@ -128,12 +149,73 @@ export default {
       padding-top: 0;
     }
 
-    .top-bar {
-      background: #E3E6E0;
-      font-size: 0.9rem;
-      font-weight: 600;
-      padding: 0.6rem 0;
-      text-align: center;
+    .slide-img {
+        height: 280px;
+        width: 100%;
+    }
+
+    .slide-img img{
+        object-fit: cover;
+        width: 100%;
+    }
+
+    .project-top {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 1rem;
+    }
+
+    .project-type {
+        display: flex;
+        flex-direction: column;
+        font-size:1.1rem;
+        font-weight: 500;
+    }
+
+    .project-type span {
+        font-size:0.7rem;
+        font-weight: lighter;
+    }
+
+    .project-price {
+        background: rgba(7, 153, 144, 0.4);
+        color: rgb(43, 61, 76);
+        border-radius: 0.3rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-top: 0.3rem;
+        padding: 0.4rem 0.7rem;
+        text-align: center;
+        width: 50%;
+    }
+
+    .project-icons {
+        margin: 0.3rem 0 0.3rem 0;
+    }
+
+    .project-info-block {
+        margin: 2.2rem 0 0.2rem 0;
+    }
+
+    .project-info {
+        margin-bottom: 0.8rem;
+    }
+
+    .project-info-title {
+        color: #2B3D4C;
+        font-size: 1rem;
+        font-weight: 500;
+        margin: 0;
+        padding: 0;
+    }
+
+    .project-info-text {
+        color: #2B3D4C;
+        font-size: 0.7rem;
+        margin: 0;
+        margin-top: 0.1rem;
+        padding: 0;
     }
 
     .listing {
@@ -167,12 +249,13 @@ export default {
 
     .info-card {
       align-items: center;
-      box-shadow: 0px 2px 8px rgb(220, 220, 220);
+      border: 1px solid #2B3D4C;
+      border-radius: 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      margin: 0 0 0.3rem 0;
-      padding: 1.3rem 0;
+      margin: 0;
+      padding: 0.5rem 0;
       width: 100%;
     }
 
@@ -188,14 +271,14 @@ export default {
       color: #2B3D4C;
       font-size: 0.8rem;
       font-weight: lighter;
-      padding: 0 2rem;
+      padding: 0 0.2rem;
       margin: 0;
       text-align: center;
     }
 
     .info-icon {
       color: #899CB2;
-      font-size: 2.5rem;
+      font-size: 2rem;
     }
 
     .info-btn {
@@ -233,4 +316,12 @@ export default {
       margin: 0 2rem 2rem 2rem;
       padding: 0 0 0.5rem 0.5rem;
     }
+
+    .register--btn {
+    background: #2B3D4C;
+    border-radius: 0px;
+    color: #fff;
+    font-weight: 500;
+    padding: 0.5rem 0.7rem;
+  }
 </style>
