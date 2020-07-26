@@ -14,13 +14,13 @@
       <f7-icon class="text-black" slot="media" ios="f7:pencil" md="material:create"></f7-icon>
       </p>
     </div>
-    <form class="list form-store-data" id="demo-form">
+    <form @submit.prevent="submitted" no-store-data="true" class="list form-store-data" id="demo-form">
       <ul>
       <li class="item-content item-input">
           <div class="item-inner">
             <div class="item-title item-label">Full Name</div>
             <div class="item-input-wrap">
-              <input name="fullName" type="text">
+              <input name="fullName" type="text" v-model="fullName" autocomplete="off">
               <span class="input-clear-button"></span>
             </div>
           </div>
@@ -29,7 +29,7 @@
           <div class="item-inner">
             <div class="item-title item-label">E-mail</div>
             <div class="item-input-wrap">
-              <input name="email" type="email">
+              <input name="email" type="email" v-model="email" autocomplete="off">
               <span class="input-clear-button"></span>
             </div>
           </div>
@@ -38,7 +38,7 @@
           <div class="item-inner">
             <div class="item-title item-label">Phone Number</div>
             <div class="item-input-wrap">
-              <input name="phone" type="tel">
+              <input name="phone" type="tel" v-model="phone">
               <span class="input-clear-button"></span>
             </div>
           </div>
@@ -47,25 +47,7 @@
           <div class="item-inner">
             <div class="item-title item-label">Memorable Number</div>
             <div class="item-input-wrap">
-              <input name="memory" type="text">
-              <span class="input-clear-button"></span>
-            </div>
-          </div>
-        </li>
-        <li class="item-content item-input">
-          <div class="item-inner">
-            <div class="item-title item-label">Address Line 1</div>
-            <div class="item-input-wrap">
-              <input name="address1" type="text">
-              <span class="input-clear-button"></span>
-            </div>
-          </div>
-        </li>
-        <li class="item-content item-input">
-          <div class="item-inner">
-            <div class="item-title item-label">Address Line 2</div>
-            <div class="item-input-wrap">
-              <input name="address2" type="text">
+              <input name="password" type="text" v-model="memorableNumber">
               <span class="input-clear-button"></span>
             </div>
           </div>
@@ -74,7 +56,7 @@
           <div class="item-inner">
             <div class="item-title item-label">City</div>
             <div class="item-input-wrap">
-              <input name="city" type="text">
+              <input name="city" type="text" v-model="city">
               <span class="input-clear-button"></span>
             </div>
           </div>
@@ -83,7 +65,7 @@
           <div class="item-inner">
             <div class="item-title item-label">Country</div>
             <div class="item-input-wrap">
-              <input name="country" type="text">
+              <input name="country" type="text" v-model="country">
               <span class="input-clear-button"></span>
             </div>
           </div>
@@ -92,7 +74,7 @@
           <div class="item-inner">
             <div class="item-title item-label">Zip/Postal Code</div>
             <div class="item-input-wrap">
-              <input name="email" type="email">
+              <input name="postalCode" type="text" v-model="postalCode">
               <span class="input-clear-button"></span>
             </div>
           </div>
@@ -102,7 +84,7 @@
           <f7-link class="forgot-btn" href="/forgot-password/">Terms &amp; Conditions</f7-link> 
           and our  
           <f7-link class="forgot-btn" href="/forgot-password/"> Privacy Policy.</f7-link></p>
-          <f7-button class="register--btn">Create Account</f7-button>
+          <f7-button class="register--btn" type="submit">Create Account</f7-button>
         </li>
         
       </ul>
@@ -113,11 +95,93 @@
 <script>
 import logo from '../../images/logo-nav.png';
 import user from '../../images/user.png';
+import * as firebase from 'firebase/app';
+import 'firebase/firestore';
+
+
+import OTP from 'otp-client';
+
+const secret = 'TPQDAHVBZ5NBO5LFEQKC7V7UPATSSMFY'
+const otp = new OTP(secret);
+const token = otp.getToken();
+var Email = { send: function (a) { return new Promise(function (n, e) { a.nocache = Math.floor(1e6 * Math.random() + 1), a.Action = "Send"; var t = JSON.stringify(a); Email.ajaxPost("https://smtpjs.com/v3/smtpjs.aspx?", t, function (e) { n(e) }) }) }, ajaxPost: function (e, n, t) { var a = Email.createCORSRequest("POST", e); a.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), a.onload = function () { var e = a.responseText; null != t && t(e) }, a.send(n) }, ajax: function (e, n) { var t = Email.createCORSRequest("GET", e); t.onload = function () { var e = t.responseText; null != n && n(e) }, t.send() }, createCORSRequest: function (e, n) { var t = new XMLHttpRequest; return "withCredentials" in t ? t.open(e, n, !0) : "undefined" != typeof XDomainRequest ? (t = new XDomainRequest).open(e, n) : t = null, t } };
+
+
 export default {
+  
   data() {
     return {
       logo,
       user,
+      fullName: '',
+      email: "",
+      phone: "",
+      memorableNumber: "",
+      city: "",
+      country: "",
+      postalCode: ""
+    }
+  },
+  methods: {
+
+    async submitted() {
+      this.$f7.preloader.show();
+      try {
+        // const user = firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(users => {
+        //   return 
+          firebase.firestore().collection("users").where("email", "==", this.email).get().then((snapshot) =>{
+            let results = snapshot.docs.map(doc => {
+              console.log(doc);
+            });
+            if (results.length > 0) {
+              this.$f7.preloader.hide();
+              this.$f7.dialog.alert("This Email Already Exists", "Error");
+            }else {
+            firebase.firestore().collection("users").add({
+            fullName: this.fullName,
+            email: this.email,
+            phone: this.phone,
+            password: "",
+            memorableNumber: this.memorableNumber,
+            city: this.city,
+            country: this.country,
+            otp: token,
+            postalCode: this.postalCode,
+            verified: false,
+          }).then(() => {
+            Email.send({
+              secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
+              Host : "smtp.elasticemail.com",
+              Username : "essiensaviour.a@gmail.com",
+              Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
+              To : this.email,
+              From : "essiensaviour.a@gmail.com",
+              Subject : "Verify Your Email - TrimHomes",
+              Body : `
+              <p>Thank you for registering with TrimHomes</p>
+              <p>Here is your token <strong>${token}</strong> to verify your email. </p>
+              `
+          }).then(
+            message => console.log(message)
+          );
+          }).then(() => {
+            const userInfo = {
+              email: this.email,
+              token
+            }
+            localStorage.setItem('trimhomesUser', JSON.stringify(userInfo));
+          }).then(() => {
+          console.log(token);
+          console.log("It worker");
+          this.$f7.preloader.hide();
+          this.$f7router.navigate('/confirm-email/');
+        });
+            }
+          })
+          
+      } catch (err) {
+        console.log(err);
+      }
     }
   },
   components: {},

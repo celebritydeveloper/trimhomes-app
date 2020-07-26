@@ -2,6 +2,48 @@
 	user-select: none;
 }
 
+
+.navbar-bg {
+	background-color: #2B3D4C;
+}
+
+.ios-translucent-bars .navbar-bg{
+	background-color: #2B3D4C;
+}
+
+.navbar-inner {
+	color: #fff;
+	padding: 0.4rem;
+}
+
+.navbar-inner .back{
+	color: #fff;
+}
+
+.tab-link i.icon {
+	color: #2B3D4C;
+	font-size: 1rem;
+}
+
+.tabbar .tab-link-active, .tabbar-labels .tab-link-active {
+	color: #2B3D4C;
+}
+
+.media-item .item-link .item-title {
+	color: #2B3D4C;
+	margin-bottom: 0rem;
+}
+
+.media-item .item-link .item-subtitle {
+	background: rgba(7, 153, 144, 0.5);
+	border-radius: 6px;
+	color: #2B3D4C;
+	display: inline;
+	font-size: 0.7rem;
+	margin: 0;
+	padding: 0.1rem 0.6rem;
+}
+
 input {
 	user-select: element !important;
 }

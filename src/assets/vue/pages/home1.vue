@@ -102,7 +102,18 @@ export default {
       isBottom: true,
     }
   },
-  components: {}
+  components: {},
+
+  mounted: () => {
+    axios.get('https://api.github.com/users/mapbox')
+    .then((response) => {
+      console.log(response.data);
+      console.log(response.status);
+      console.log(response.statusText);
+      console.log(response.headers);
+      console.log(response.config);
+    });
+  }
 };
 </script>
 
@@ -112,7 +123,7 @@ export default {
         font-family: 'Montserrat', sans-serif;
     }
 
-    .home .navbar .navbar-bg {
+    .navbar-bg {
         background: none !important;
         background-color: #2B3D4C !important;
         background: #2B3D4C !important;
@@ -137,7 +148,6 @@ export default {
     }
 
     .listing {
-        color: red;
         margin-top: 0;
         margin-bottom: 0.3rem;
     }

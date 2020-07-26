@@ -19,17 +19,49 @@ import MaterialIcons from 'material-design-icons/iconfont/material-icons.css';
 // Import Fontawesome Theme Styles
 import FontAwesome from '@fortawesome/fontawesome-free/css/all.min.css';
 
+//import './css/main.css';
+
+
 // Import fastClick
 import FastClick from 'fastclick';
 
 // Import App Custom Styles
-// import AppStyles from './assets/sass/main.scss'
+import AppStyles from './assets/sass/main.scss'
 
 // Import App Component
 import app from './main.vue';
 
-// Import Vuex Storage
+import axios from 'axios';
+window.axios = axios;
+
+
 import store from './assets/vuex/storage.js';
+
+import firebase from 'firebase/app';
+
+//import sgMail from '@sendgrid/mail';
+
+// import env from 'dotenv';
+
+// env.config();
+
+
+
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAilC3T0gVurZW32xDy4Bo2T6Evg8YEAL8",
+  authDomain: "trimhomesapp.firebaseapp.com",
+  databaseURL: "https://trimhomesapp.firebaseio.com",
+  projectId: "trimhomesapp",
+  storageBucket: "trimhomesapp.appspot.com",
+  messagingSenderId: "293671043570",
+  appId: "1:293671043570:web:5dcf461110966314a5eb6b",
+  measurementId: "G-3XRPE3WGW6"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+//const storage = firebase.storage();
 
 // Different F7-Vue plugin initialization with f7 v3.0
 Framework7.use(Framework7Vue);

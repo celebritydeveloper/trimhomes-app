@@ -4,7 +4,7 @@ import AboutPage from './assets/vue/pages/about.vue';
 import SplashPage from './assets/vue/pages/splash.vue';
 import IndexPage from './assets/vue/pages/index.vue';
 import RegisterPage from './assets/vue/pages/register.vue';
-import SignInPage from './assets/vue/pages/signin.vue';
+import SignInPage from './assets/vue/pages/login.vue';
 import EmailConfirmPage from './assets/vue/pages/confirm-email.vue';
 import ForgotPasswordPage from './assets/vue/pages/forgot-password.vue';
 import ProjectSinglePage from './assets/vue/pages/project-single.vue';
@@ -42,7 +42,7 @@ export default [
     component: RegisterPage
   },
   {
-    path: '/sign/',
+    path: '/login/',
     component: SignInPage
   },
   {

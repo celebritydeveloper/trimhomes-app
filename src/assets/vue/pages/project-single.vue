@@ -40,7 +40,7 @@
                 <span class="project-location">Lea Valley Country Park</span>
                 <span class="project-price">£ 192,000</span>
             </p>
-            <p class="register--btn" sheet-open=".demo-sheet-swipe-to-close">Make Request</p>
+            <p class="register--btn" @click="$refs.actionsOneGroup.open()">Make Request</p>
         </div>
 
         <f7-block class="project-icons">
@@ -88,16 +88,30 @@
         </f7-block>
 
         <!-- Swipe to close demo sheet -->
-        <f7-sheet
+        <f7-sheet ref="actionsOneGroup"
             class="demo-sheet-swipe-to-close"
             style="height:auto; --f7-sheet-bg-color: #fff;"
             swipe-to-close
             backdrop
             >
             <f7-page-content>
-                <f7-block-title large>Hello!</f7-block-title>
                 <f7-block>
-                <p>Eaque maiores ducimus, impedit unde culpa qui, explicabo accusamus, non vero corporis voluptatibus similique odit ab...</p>
+                <form class="list form-store-data" id="demo-form">
+                  <ul>
+                    <li class="item-content item-input">
+                      <div class="item-inner">
+                        <div class="item-input-wrap">
+                          <input name="email" type="email" placeholder="Enter Amount">
+                          <span class="input-clear-button"></span>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <f7-button class="verify--btn">Make Request</f7-button>
+                    </li>
+                    
+                  </ul>
+                </form>
                 </f7-block>
             </f7-page-content>
         </f7-sheet>
@@ -323,5 +337,90 @@ export default {
     color: #fff;
     font-weight: 500;
     padding: 0.5rem 0.7rem;
+  }
+
+  .block-strong {
+    margin-bottom: 5px;
+    margin-top: 3.8rem;
+    padding-top: 10px;
+    padding-bottom: 5px;
+  }
+
+  .block-strong::before, .block-strong::after{
+    height: 0px;
+    width: 0px;
+  }
+
+  .logo {
+    object-fit: cover;
+    width: 100%
+  }
+
+  .confirm--title {
+    color: #2B3D4C;
+    font-size: 1.1rem;
+    font-weight: 550;
+    text-align: center;
+  }
+
+  .text {
+    font-size: 0.9rem;
+    font-weight: 350;
+    margin-bottom: 1.5rem !important;
+    padding-right: 35px;
+  }
+
+  .list {
+    margin: 0px;
+  }
+
+  .list .item-content .item-inner .item-title{
+    color: #2B3D4C;
+  }
+
+  .list .item-content .item-inner .item-input-wrap input {
+    font-size: 1.1rem;
+    padding-bottom: 0rem;
+    text-align: center;
+  }
+
+  .list .item-content .item-inner .item-input-wrap::after{
+    background-color: #2B3D4C;
+  }
+
+  .list ul::after, .list ul::before {
+    height: 0px;
+    width: 0px;
+  }
+
+  .terms {
+    font-size: 0.8rem;
+    font-weight: lighter;
+    text-align: center;
+  }
+
+  .forgot-btn {
+    color: #2B3D4C;
+    font-size: 0.8rem;
+    font-weight: 550;
+    text-align: center;
+    text-transform: capitalize;
+  }
+
+  .verify--btn {
+    align-items: center;
+    background: #2B3D4C;
+    border-radius: 0px;
+    color: #fff;
+    display: flex;
+    height: 2.6rem;
+    justify-content: center;
+    margin: 2rem auto 1.5rem auto;
+    width: 90%;
+  }
+
+  .demo-sheet-swipe-to-close {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
   }
 </style>
