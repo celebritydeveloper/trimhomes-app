@@ -1,7 +1,7 @@
 <template>
   <f7-page>
   <f7-navbar class="home--nav">
-    <f7-navbar back-link="Confirm your email" no-shadow no-hairline back-link-show-text></f7-navbar>
+    <f7-navbar back-link="Verify Token" no-shadow no-hairline back-link-show-text></f7-navbar>
       <f7-nav-right>
         <img :src="logo" class="logo">
       </f7-nav-right>
@@ -12,7 +12,7 @@
       <f7-block-title class="confirm--title">You’ve got mail....</f7-block-title>
       <p class="text">Please check your mailbox for an email from Trim Homes UK and enter the confirmation  code you received below:</p>
     </div>
-    <form @submit.prevent="submitted" no-store-data="true" class="list form-store-data" id="password-form">
+    <form @submit.prevent="submitted" no-store-data class="list form-store-data" id="password-form">
       <ul>
         <li class="item-content item-input">
           <div class="item-inner">
@@ -24,30 +24,10 @@
           </div>
         </li>
         <span v-if="msg.token" class="valid">{{msg.token}}</span>
-        <li class="item-content item-input">
-          <div class="item-inner">
-            <div class="item-title item-label">Create a strong password:</div>
-            <div class="item-input-wrap">
-              <input name="password" v-model="password" type="password">
-              <span v-if="msg.password">{{msg.password}}</span>
-              <span class="input-clear-button"></span>
-            </div>
-          </div>
-        </li>
-        <li class="item-content item-input">
-          <div class="item-inner">
-            <div class="item-title item-label">Confirm password:</div>
-            <div class="item-input-wrap">
-              <input name="cPassword" v-model="cPassword" type="password">
-              <span class="input-clear-button"></span>
-            </div>
-            <span v-if="msg.cPassword">{{msg.cPassword}}</span>
-          </div>
-        </li>
         <li>
           <f7-button class="verify--btn" type="submit">Verify</f7-button>
           <p class="terms">If you didn’t recieve a code!  
-          <f7-link class="forgot-btn" href="/forgot-password/">Resend</f7-link></p>
+          <f7-link class="forgot-btn" @click="resendToken">Resend</f7-link></p>
         </li>
         
       </ul>
@@ -59,18 +39,23 @@
 import logo from '../../images/logo-nav.png';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
+import OTP from 'otp-client';
+
+
+const secret = 'TPQDAHVBZ5NBO5LFEQKC7V7UPATSSMFY';
+const otp = new OTP(secret);
+const otpCode = otp.getToken();
+
+const Email = { send: function (a) { return new Promise(function (n, e) { a.nocache = Math.floor(1e6 * Math.random() + 1), a.Action = "Send"; var t = JSON.stringify(a); Email.ajaxPost("https://smtpjs.com/v3/smtpjs.aspx?", t, function (e) { n(e) }) }) }, ajaxPost: function (e, n, t) { var a = Email.createCORSRequest("POST", e); a.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), a.onload = function () { var e = a.responseText; null != t && t(e) }, a.send(n) }, ajax: function (e, n) { var t = Email.createCORSRequest("GET", e); t.onload = function () { var e = t.responseText; null != n && n(e) }, t.send() }, createCORSRequest: function (e, n) { var t = new XMLHttpRequest; return "withCredentials" in t ? t.open(e, n, !0) : "undefined" != typeof XDomainRequest ? (t = new XDomainRequest).open(e, n) : t = null, t } };
 
 let userId;
 let userInfo;
 export default {
-
   data() {
     return {
       logo,
       msg: [],
       token: '',
-      password: '',
-      cPassword: '',
     }
   },
   mounted() {
@@ -87,43 +72,20 @@ export default {
    token(value){
       this.token = value;
       this.validateToken(value);
-    },
-    password(value){
-      this.password = value;
-      this.validatePassword(value);
-    },
-    cPassword(value){
-      this.cPassword = value;
-      this.confirmPassword(value);
     }
   },
   methods: {
     validateToken(value){
       if (value === userInfo.token) {
-        this.msg['token'] = 'Awesome! Your email address has been verified. ';
+        this.msg['token'] = '';
       } else {
          this.msg['token'] = '';
       }
     },
-    validatePassword(value){
-      let difference = 8 - value.length;
-      if (value.length < 8) {
-        this.msg['password'] = 'Must be 8 characters! '+ difference + ' characters left' ;
-      } else {
-         this.msg['password'] = 'Good Enough';
-      }
-    },
-    confirmPassword(value){
-      if (value !== this.password) {
-        this.msg['cPassword'] = 'Password Does not match';
-      } else {
-         this.msg['cPassword'] = 'Good Enough';
-      }
-    },
     async submitted() {
-      if(this.token && this.password) {
         try {
-          firebase.firestore().collection("users").where("email", "==", userInfo.email).get().then((snapshot) =>{
+            if (this.token === userInfo.token) {
+                firebase.firestore().collection("users").where("email", "==", userInfo.email).get().then((snapshot) =>{
             let results = snapshot.docs.map(doc => {
               userId = doc.id;
               console.log(doc.id);
@@ -131,45 +93,81 @@ export default {
             if (results.length < 0) {
               this.$f7.preloader.hide();
               this.$f7.dialog.alert("This Email Already Exists", "Error");
-              console.log("It exists"); //do what you want with code
             }else {
-            firebase.firestore().collection("users").doc(userId).update({
-              password: this.password,
-          }).then(() => {
-            console.log("Updated");
-          //   Email.send({
-          //     secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
-          //     Host : "smtp.elasticemail.com",
-          //     Username : "essiensaviour.a@gmail.com",
-          //     Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
-          //     To : this.email,
-          //     From : "essiensaviour.a@gmail.com",
-          //     Subject : "Verify Your Email - TrimHomes",
-          //     Body : `
-          //     <p>Thank you for registering with TrimHomes</p>
-          //     <p>Here is your token <strong>${token}</strong> to verify your email. </p>
-          //     `
-          // }).then(
-          //   message => console.log(message)
-          // );
-          }).then(() => {
-          console.log("It worker");
-          this.$f7.preloader.hide();
-          this.$f7router.navigate('/login/');
-        });
+                firebase.firestore().collection("users").doc(userId).update({
+                    verified: true,
+                });
             }
+
+          }).then(() => {
+              this.$f7router.navigate('/set-password/');
+          })
+                
+            }else {
+                this.$f7.dialog.alert("Token Does not Match", "Error");
+            }
+        } catch (err) {
+            this.$f7.dialog.alert(err.message, "Error");
+        }
+
+      
+    },
+    async resendToken() {
+        this.$f7.preloader.show();
+        try {
+          firebase.firestore().collection("users").where("email", "==", userInfo.email).get().then((snapshot) =>{
+            let results = snapshot.docs.map(doc => {
+              userId = doc.id;
+              console.log(doc.id);
+            });
+            firebase.firestore().collection("users").doc(userId).update({
+              otp: otpCode,
+          }).then(() => {
+            
+            console.log("Updated");
+            Email.send({
+              secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
+              Host : "smtp.elasticemail.com",
+              Username : "essiensaviour.a@gmail.com",
+              Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
+              To : userInfo.email,
+              From : "essiensaviour.a@gmail.com",
+              Subject : "TrimHomes - Verify Your Email",
+              Body : `
+              <p>Thank you for registering with TrimHomes</p>
+              <p>Here is your newly generate token <strong>${otpCode}</strong> to verify your email. </p>
+              `
+          }).then(
+            message => console.log(message)
+          );
+          this.$f7.dialog.alert(`A new generated token has been sent to ${userInfo.email}`, "Success");
+          }).then(() => {
+            if(JSON.parse(localStorage.getItem("trimhomesUser"))) {
+                let userToken = JSON.parse(localStorage.getItem('trimhomesUser'));
+                userToken.token = otpCode;
+                localStorage.setItem("trimhomesUser", JSON.stringify(userToken));
+              }
+          this.$f7.preloader.hide();
+        }).then(() => {
+            this.$f7router.navigate('/verify-token/', {
+            ignoreCache:true,
+            reloadCurrent:true,
+            });
+            this.$f7router.refreshPage({
+            path: '/verify-token/'
+            });
+        })
+            
           })
           
       } catch (err) {
         console.log(err);
       }
       return true;
-      }else {
-        this.$f7.dialog.alert("You must verify token or password must match", "Error");
-      }
       
     }
   },
+  
   components: {},
 };
 </script>

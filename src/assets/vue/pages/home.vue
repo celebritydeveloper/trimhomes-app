@@ -46,7 +46,10 @@
       <f7-list-item link="/login/" title="Login" panel-close>
         <f7-icon slot="media" icon="fas fa-id-card-alt fa-fw"></f7-icon>
       </f7-list-item>
-      <f7-list-item link="/confirm-email/" title="Confirm Email" panel-close>
+      <f7-list-item link="/verify-token/" title="Verify Token" panel-close>
+        <f7-icon slot="media" icon="fas fa-id-card-alt fa-fw"></f7-icon>
+      </f7-list-item>
+      <f7-list-item link="/set-password/" title="Set Password" panel-close>
         <f7-icon slot="media" icon="fas fa-id-card-alt fa-fw"></f7-icon>
       </f7-list-item>
       <f7-list-item link="/forgot-password/" title="Forgot Password" panel-close>

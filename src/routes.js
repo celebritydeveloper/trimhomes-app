@@ -5,7 +5,8 @@ import SplashPage from './assets/vue/pages/splash.vue';
 import IndexPage from './assets/vue/pages/index.vue';
 import RegisterPage from './assets/vue/pages/register.vue';
 import SignInPage from './assets/vue/pages/login.vue';
-import EmailConfirmPage from './assets/vue/pages/confirm-email.vue';
+import VerifyTokenPage from './assets/vue/pages/verify-token.vue';
+import SetPasswordPage from './assets/vue/pages/set-password.vue';
 import ForgotPasswordPage from './assets/vue/pages/forgot-password.vue';
 import ProjectSinglePage from './assets/vue/pages/project-single.vue';
 
@@ -46,8 +47,12 @@ export default [
     component: SignInPage
   },
   {
-    path: '/confirm-email/',
-    component: EmailConfirmPage
+    path: '/verify-token/',
+    component: VerifyTokenPage
+  },
+  {
+    path: '/set-password/',
+    component: SetPasswordPage
   },
   {
     path: '/forgot-password/',
