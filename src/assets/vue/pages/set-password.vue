@@ -45,9 +45,7 @@
           </div>
         </li>
         <li>
-          <f7-button class="verify--btn" type="submit">Verify</f7-button>
-          <p class="terms">If you didn’t recieve a code!  
-          <f7-link class="forgot-btn" href="/forgot-password/">Resend</f7-link></p>
+          <f7-button class="verify--btn" type="submit">Go To Dashboard</f7-button>
         </li>
         
       </ul>
@@ -102,12 +100,12 @@ export default {
       if (value !== this.password) {
         this.msg['cPassword'] = 'Password Does not match';
       } else {
-         this.msg['cPassword'] = 'Good Enough';
+         this.msg['cPassword'] = 'Password Match';
       }
     },
     async submitted() {
       this.$f7.preloader.show();
-      if(this.password.trim() === "" && this.cPassword.trim() === "") {
+      if(this.password.trim() !== "" && this.cPassword.trim() !== "" && this.cPassword === this.password) {
         try {
           firebase.firestore().collection("users").where("email", "==", userInfo.email).get().then((snapshot) =>{
             let results = snapshot.docs.map(doc => {
@@ -138,7 +136,7 @@ export default {
       return true;
       }else {
         this.$f7.preloader.hide();
-        this.$f7.dialog.alert("Password Does not Match... Try again", "Error");
+        this.$f7.dialog.alert("You must set a password", "Error");
       }
       
     }

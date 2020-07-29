@@ -35,7 +35,7 @@
     </form>
     <div>
       <f7-block-title class="login--title">New user?</f7-block-title>
-      <f7-button class="signup--btn" href="/signup/">Sign Up</f7-button>
+      <f7-button class="signup--btn" href="/register/">Sign Up</f7-button>
     </div>
   </f7-page>
 </template>

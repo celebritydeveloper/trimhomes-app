@@ -13,9 +13,17 @@
       <p>Upload a profile picture.
       <f7-icon class="text-black" slot="media" ios="f7:pencil" md="material:create"></f7-icon>
       </p>
+      
     </div>
     <form @submit.prevent="submitted" no-store-data="true" class="list form-store-data" id="demo-form">
       <ul>
+      <li class="item-content item-input">
+          <div class="item-inner">
+            <div class="item-input-wrap">
+              <input name="image" accept="image/*" type="file" @change="handleFileChangeuploadImage($event)">
+            </div>
+          </div>
+      </li>
       <li class="item-content item-input">
           <div class="item-inner">
             <div class="item-title item-label">Full Name</div>
@@ -113,16 +121,21 @@ export default {
     return {
       logo,
       user,
+      image: null,
       fullName: '',
       email: "",
       phone: "",
       memorableNumber: "",
       city: "",
       country: "",
-      postalCode: ""
+      postalCode: "",
     }
   },
   methods: {
+
+    uploadImage(event){
+
+    },
 
     async submitted() {
       this.$f7.preloader.show();
@@ -148,6 +161,7 @@ export default {
             otp: token,
             postalCode: this.postalCode,
             verified: false,
+            created: new Date()
           }).then(() => {
             Email.send({
               secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",

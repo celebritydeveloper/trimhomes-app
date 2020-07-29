@@ -96,18 +96,18 @@
             >
             <f7-page-content>
                 <f7-block>
-                <form class="list form-store-data" id="demo-form">
+                <form @submit.prevent="makeRequest" no-store-data="true" class="list form-store-data" id="demo-form">
                   <ul>
                     <li class="item-content item-input">
                       <div class="item-inner">
                         <div class="item-input-wrap">
-                          <input name="email" type="email" placeholder="Enter Amount">
+                          <input name="amount" type="number" v-model="amount" placeholder="Enter Amount">
                           <span class="input-clear-button"></span>
                         </div>
                       </div>
                     </li>
                     <li>
-                      <f7-button class="verify--btn">Make Request</f7-button>
+                      <f7-button class="verify--btn" type="submit">Make Request</f7-button>
                     </li>
                     
                   </ul>
@@ -126,17 +126,97 @@ import logo from '../../images/logo-nav.png';
 import home from '../../images/home.jpg';
 import slide from '../../images/props.jpg';
 import {f7Sheet } from 'framework7-vue';
+
+import * as firebase from 'firebase/app';
+import 'firebase/firestore';
+
+const Email = { send: function (a) { return new Promise(function (n, e) { a.nocache = Math.floor(1e6 * Math.random() + 1), a.Action = "Send"; var t = JSON.stringify(a); Email.ajaxPost("https://smtpjs.com/v3/smtpjs.aspx?", t, function (e) { n(e) }) }) }, ajaxPost: function (e, n, t) { var a = Email.createCORSRequest("POST", e); a.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), a.onload = function () { var e = a.responseText; null != t && t(e) }, a.send(n) }, ajax: function (e, n) { var t = Email.createCORSRequest("GET", e); t.onload = function () { var e = t.responseText; null != n && n(e) }, t.send() }, createCORSRequest: function (e, n) { var t = new XMLHttpRequest; return "withCredentials" in t ? t.open(e, n, !0) : "undefined" != typeof XDomainRequest ? (t = new XDomainRequest).open(e, n) : t = null, t } };
+
+let userId;
+let userInfo;
+let userEmail;
+let userName;
+
 export default {
     data() {
     return {
       logo,
+      amount: '',
       home,
       slide,
       isBottom: true,
     }
   },
+  mounted() {
+    if (localStorage.getItem('trimhomeUser'));
+    userInfo = JSON.parse(localStorage.getItem('trimhomesUser'));
+    console.log(userInfo);
+    userEmail = userInfo.email;
+    console.log(userId);
+  },
   components: {
       f7Sheet,
+  },
+  methods: {
+    async makeRequest() {
+        this.$f7.preloader.show();
+        try {
+          firebase.firestore().collection("users").where("email", "==", userEmail).get().then((snapshot) =>{
+            let results = snapshot.docs.map(doc => {
+              userId = doc.data();
+              userName = userId.fullName;
+            });
+            firebase.firestore().collection("Requests").add({
+              Name: userName,
+              Email: userEmail,
+              Amount: this.amount,
+              Date: new Date()
+          }).then(() => {
+            Email.send({
+              secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
+              Host : "smtp.elasticemail.com",
+              Username : "essiensaviour.a@gmail.com",
+              Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
+              To : userInfo.email,
+              From : "essiensaviour.a@gmail.com",
+              Subject : "TrimHomes - Investment Request",
+              Body : `
+              <p>Thank you so much for investing in the property.</p>
+              <p>Admin will process your request and reach out to you via a call or email within 24hours. </p>
+              `
+          }).then(
+            message => console.log(message)
+          );
+          }).then(() => {
+            Email.send({
+              secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
+              Host : "smtp.elasticemail.com",
+              Username : "essiensaviour.a@gmail.com",
+              Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
+              To : "essiensaviour.a@gmail.com",
+              From : "essiensaviour.a@gmail.com",
+              Subject : "TrimHomes - Investment Request",
+              Body : `
+              <p>An investment opportunity just popped in.</p>
+              <p> <strong>${userName}</strong> has just invested <strong>$${this.amount}</strong>. Here is their Email Address <strong>${userEmail}</strong></p>
+              `
+          }).then(
+            message => console.log(message)
+          );
+          this.$f7.dialog.alert(`You have successfully invested in this property`, "Success");
+          this.$refs.actionsOneGroup.close();
+          }).then(() => {
+          this.$f7.preloader.hide();
+        });
+            
+          })
+          
+      } catch (err) {
+        console.log(err);
+      }
+      return true;
+      
+    }
   }
 };
 </script>

@@ -17,9 +17,7 @@
         <li class="item-content item-input">
           <div class="item-inner">
             <div class="item-input-wrap">
-              <input name="token" v-model="token" type="text" placeholder="Enter Code" autocomplete>
-              <span class="input-clear-button"></span>
-              
+              <input name="token" v-model="token" type="text" placeholder="Enter Code">              
             </div>
           </div>
         </li>

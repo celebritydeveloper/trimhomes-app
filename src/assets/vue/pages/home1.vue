@@ -1,5 +1,5 @@
 <template>
-  <f7-page class="home">
+  <f7-page class="home" ptr @ptr:refresh="loadMore">
     <f7-navbar class="home--nav">
     <f7-nav-left>
         Home
@@ -35,25 +35,18 @@
     <f7-tabs>
       <f7-tab id="tab-1" class="page-conten" tab-active>
         <f7-list  media-list class="listing">
-            <f7-list-item 
+          <f7-list-item
+                v-for="property in properties" 
+                :key="property.id"
                 class="listing-item"
-                link="#"
-                title="5 BHK Luxury House"
-                subtitle="£ 192,000"
-                text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+                link="/project-single/"
+                :title="property.Title"
+                :subtitle="property.SalePrice"
+                :text="property.ShortSummary"
             >
                 <img slot="media" :src="home" height="80" width="80" />
-            </f7-list-item>
-            <f7-list-item
-                class="listing-item"
-                link="#"
-                title="5 Park Lane"
-                subtitle="£ 150,000"
-                text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-            >
-                <img slot="media" :src="home" height="80" width="80" />
-            </f7-list-item>
-            </f7-list>
+          </f7-list-item>
+          </f7-list>
             <f7-card class="info-card">
               <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:credit_card"></f7-icon>
               <p class="info-title">Part-purchase a property</p>
@@ -67,22 +60,53 @@
               <f7-button class="info-btn">Update Now</f7-button>
             </f7-card>
       </f7-tab>
-      <f7-tab id="tab-2" class="page-content">
-        <f7-block>
-          <p>Tab 2 content</p>
-          ...
-        </f7-block>
+      <f7-tab id="tab-2" class="page-conten">
+          <f7-list  media-list class="listing">
+            <f7-list-item 
+                class="listing-item"
+                link="#"
+                title="5 BHK Luxury House"
+                subtitle="£ 192,000"
+                text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+            >
+                <img slot="media" :src="home" height="80" width="80" />
+          </f7-list-item>
+          <f7-list-item
+                class="listing-item"
+                link="#"
+                title="5 Park Lane"
+                subtitle="£ 150,000"
+                text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+            >
+                <img slot="media" :src="home" height="80" width="80" />
+          </f7-list-item>
+          </f7-list>
       </f7-tab>
-      <f7-tab id="tab-3" class="page-content">
-        <f7-block>
-          <p>Tab 3 content</p>
-          ...
-        </f7-block>
+      <f7-tab id="tab-3" class="page-conten">
+        <f7-list  media-list class="listing">
+            <f7-list-item 
+                class="listing-item"
+                link="#"
+                title="5 BHK Luxury House"
+                subtitle="£ 192,000"
+                text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+            >
+                <img slot="media" :src="home" height="80" width="80" />
+          </f7-list-item>
+          <f7-list-item
+                class="listing-item"
+                link="#"
+                title="5 Park Lane"
+                subtitle="£ 150,000"
+                text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+            >
+                <img slot="media" :src="home" height="80" width="80" />
+          </f7-list-item>
+          </f7-list>
       </f7-tab>
       <f7-tab id="tab-4" class="page-content">
         <f7-block>
-          <p>Tab 4 content</p>
-          ...
+          <p>Support Form</p>
         </f7-block>
       </f7-tab>
     </f7-tabs>
@@ -94,27 +118,65 @@
 <script>
 import logo from '../../images/logo-nav.png';
 import home from '../../images/home.jpg';
+
+import * as firebase from 'firebase/app';
+import 'firebase/firestore';
+
+let data;
+
 export default {
     data() {
     return {
       logo,
       home,
       isBottom: true,
+      properties: [],
     }
+  },
+  methods: {
+     loadMore(done) {
+       setTimeout(() => {
+       this.$f7router.navigate('/home1/');
+       done();
+       }, 1000);
+    },
+
+    async submitted() {
+      try {
+        // const user = firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(users => {
+        //   return 
+          firebase.firestore().collection("users").get().then((snapshot) =>{
+            snapshot.docs.map(doc => {
+              console.log(doc);
+              console.log(doc.data());
+            });
+          })
+          
+      } catch (err) {
+        console.log(err);
+      }
+  }
   },
   components: {},
 
-  mounted: () => {
-    axios.get('https://api.github.com/users/mapbox')
-    .then((response) => {
-      console.log(response.data);
-      console.log(response.status);
-      console.log(response.statusText);
-      console.log(response.headers);
-      console.log(response.config);
+  mounted(){
+    firebase.firestore().collection("properties").get().then((snapshot) => {
+            snapshot.docs.map(doc => {
+              data = doc.data();
+              this.properties.push(data);
+              console.log(this.properties);
+        });
     });
+    
+    // axios.get('https://firestore.googleapis.com/v1/projects/trimhomesapp/databases/(default)/documents/properties')
+    // .then((response) => data = response);
+    // .then(() => this.properties.push(data))
+    // .then(() => console.log(data))
+
+    
+
   }
-};
+}
 </script>
 
 
