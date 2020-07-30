@@ -24,13 +24,14 @@
         <f7-link class="panel-link" href="/">My Profile</f7-link>
         <f7-link class="panel-link" href="/">My Earnings</f7-link>
         <f7-link class="panel-link" href="/">Settings</f7-link>
+        <f7-link class="panel-link" @click="logout">Logout</f7-link>
       </f7-page>
     </f7-view>
   </f7-panel>
 
     <f7-page-content class="confirm">
     <div class="top-bar">
-      Welcome, Timi
+      Welcome, {{name}}
     </div>
     <f7-tabs>
       <f7-tab id="tab-1" class="page-conten" tab-active>
@@ -129,6 +130,7 @@ export default {
     return {
       logo,
       home,
+      name: null,
       isBottom: true,
       properties: [],
     }
@@ -139,6 +141,14 @@ export default {
        this.$f7router.navigate('/home1/');
        done();
        }, 1000);
+    },
+
+    logout() {
+      firebase.auth().signOut().then(function() {
+        // Sign-out successful.
+      }).catch(function(error) {
+        // An error happened.
+      });
     },
 
     async submitted() {
@@ -163,10 +173,23 @@ export default {
     firebase.firestore().collection("properties").get().then((snapshot) => {
             snapshot.docs.map(doc => {
               data = doc.data();
-              this.properties.push(data);
+              this.properties.push(data); 
               console.log(this.properties);
         });
     });
+
+    const user = firebase.auth().currentUser;
+    let name, email, photoUrl, uid, emailVerified;
+
+    if (user != null) {
+      this.name = user.displayName;
+      // email = user.email;
+      // photoUrl = user.photoURL;
+      // emailVerified = user.emailVerified;
+      // uid = user.uid;
+    }else {
+      this.$f7router.navigate('/login/');
+    }
     
     // axios.get('https://firestore.googleapis.com/v1/projects/trimhomesapp/databases/(default)/documents/properties')
     // .then((response) => data = response);

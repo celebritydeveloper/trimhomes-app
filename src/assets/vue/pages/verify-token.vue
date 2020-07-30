@@ -17,7 +17,7 @@
         <li class="item-content item-input">
           <div class="item-inner">
             <div class="item-input-wrap">
-              <input name="token" v-model="token" type="text" placeholder="Enter Code">              
+              <input name="token" v-model="token" type="number" placeholder="Enter Code">              
             </div>
           </div>
         </li>
@@ -81,27 +81,19 @@ export default {
       }
     },
     async submitted() {
+        this.$f7.preloader.show();
         try {
-            if (this.token === userInfo.token) {
-                firebase.firestore().collection("users").where("email", "==", userInfo.email).get().then((snapshot) =>{
-            let results = snapshot.docs.map(doc => {
-              userId = doc.id;
-              console.log(doc.id);
-            });
-            if (results.length < 0) {
-              this.$f7.preloader.hide();
-              this.$f7.dialog.alert("This Email Already Exists", "Error");
-            }else {
-                firebase.firestore().collection("users").doc(userId).update({
-                    verified: true,
-                });
-            }
-
-          }).then(() => {
-              this.$f7router.navigate('/set-password/');
-          })
+            if (this.token === userInfo.token) { 
+              if(JSON.parse(localStorage.getItem("trimhomesUser"))) {
+                let userToken = JSON.parse(localStorage.getItem('trimhomesUser'));
+                userToken.verified = true;
+                localStorage.setItem("trimhomesUser", JSON.stringify(userToken));
+              }
                 
+                this.$f7router.navigate('/set-password/');
+                this.$f7.preloader.hide();
             }else {
+                this.$f7.preloader.hide();
                 this.$f7.dialog.alert("Token Does not Match", "Error");
             }
         } catch (err) {

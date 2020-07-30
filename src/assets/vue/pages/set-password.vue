@@ -17,9 +17,7 @@
         <li class="item-content item-input disabled">
           <div class="item-inner">
             <div class="item-input-wrap">
-              <input name="token" v-model="token" type="text">
-              <span class="input-clear-button"></span>
-              
+              <input name="token" v-model="token" type="text">              
             </div>
           </div>
         </li>
@@ -45,7 +43,7 @@
           </div>
         </li>
         <li>
-          <f7-button class="verify--btn" type="submit">Go To Dashboard</f7-button>
+          <f7-button class="verify--btn" type="submit" >Go To Dashboard</f7-button>
         </li>
         
       </ul>
@@ -57,6 +55,9 @@
 import logo from '../../images/logo-nav.png';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
+import 'firebase/auth';
+
+const Email = { send: function (a) { return new Promise(function (n, e) { a.nocache = Math.floor(1e6 * Math.random() + 1), a.Action = "Send"; var t = JSON.stringify(a); Email.ajaxPost("https://smtpjs.com/v3/smtpjs.aspx?", t, function (e) { n(e) }) }) }, ajaxPost: function (e, n, t) { var a = Email.createCORSRequest("POST", e); a.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), a.onload = function () { var e = a.responseText; null != t && t(e) }, a.send(n) }, ajax: function (e, n) { var t = Email.createCORSRequest("GET", e); t.onload = function () { var e = t.responseText; null != n && n(e) }, t.send() }, createCORSRequest: function (e, n) { var t = new XMLHttpRequest; return "withCredentials" in t ? t.open(e, n, !0) : "undefined" != typeof XDomainRequest ? (t = new XDomainRequest).open(e, n) : t = null, t } };
 
 let userId;
 let userInfo;
@@ -107,27 +108,59 @@ export default {
       this.$f7.preloader.show();
       if(this.password.trim() !== "" && this.cPassword.trim() !== "" && this.cPassword === this.password) {
         try {
-          firebase.firestore().collection("users").where("email", "==", userInfo.email).get().then((snapshot) =>{
-            let results = snapshot.docs.map(doc => {
-              userId = doc.id;
-              console.log(doc.id);
-            });
-            if (results.length > 0) {
-              firebase.firestore().collection("users").doc(userId).update({
-              password: this.password,
-              }).then(() => {
-                console.log("Updated");
-              }).then(() => {
-              console.log("It worker");
-              this.$f7.preloader.hide();
-              this.$f7router.navigate('/home1/');
-            });
-              
-            }else {
-              this.$f7.preloader.hide();
-              this.$f7.dialog.alert("The Email you are setting password for does not Exists", "Error");
-            }
+          firebase.auth().createUserWithEmailAndPassword(userInfo.email, this.password).then(users => {
+          return firebase.firestore().collection("users").doc(users.user.uid).set({
+              city: userInfo.city,
+              country: userInfo.country,
+              memorableNumber: userInfo.memorableNumber,
+              phone: userInfo.phone,
+              postalCode: userInfo.postalCode,
+              verified: false,
+              created: userInfo.created,
+              token: ""
+        });
+        }).then(() => {
+          let user = firebase.auth().currentUser;
+            user.updateProfile({
+            displayName: userInfo.fullName,
+            photoURL: userInfo.image
+          }).then(()=> {
+            Email.send({
+              secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
+              Host : "smtp.elasticemail.com",
+              Username : "essiensaviour.a@gmail.com",
+              Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
+              To : userInfo.email,
+              From : "essiensaviour.a@gmail.com",
+              Subject : "Verify Your Email - TrimHomes",
+              Body : `
+              <p>Welcome to TrimHomes</p>
+              <p>Thank for creating an account with us, you can now enjoy all the benefits we offer.</p>
+              `
+          }).then(
+            message => console.log(message)
+          );
+          }).then(()=> {
+            this.$f7.preloader.hide();
+            this.$f7router.navigate('/home1/');
           })
+        })
+          //   if (results.length > 0) {
+          //     firebase.firestore().collection("users").doc(userId).update({
+          //     password: this.password,
+          //     }).then(() => {
+          //       console.log("Updated");
+          //     }).then(() => {
+          //     console.log("It worker");
+          //     this.$f7.preloader.hide();
+          //     this.$f7router.navigate('/home1/');
+          //   });
+              
+          //   }else {
+          //     this.$f7.preloader.hide();
+          //     this.$f7.dialog.alert("The Email you are setting password for does not Exists", "Error");
+          //   }
+          // })
           
       } catch (err) {
         this.$f7.preloader.hide();

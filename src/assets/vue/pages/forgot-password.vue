@@ -18,7 +18,7 @@
         <li class="item-content item-input">
           <div class="item-inner">
             <div class="item-input-wrap">
-              <input name="email" type="email" v-model="email" placeholder="Enter Email">
+              <input name="email" type="email" v-model="email" placeholder="Enter Email" required validate>
               <span class="input-clear-button"></span>
             </div>
           </div>
@@ -67,14 +67,14 @@ export default {
       this.$f7.preloader.show();
       if(this.email.trim() !== "") {
         try {
-          firebase.firestore().collection("users").where("email", "==", userInfo.email).get().then((snapshot) =>{
+          firebase.firestore().collection("users").where("phone", "==", userInfo.phone).get().then((snapshot) =>{
             let results = snapshot.docs.map(doc => {
               userId = doc.id;
               console.log(doc.id);
             });
             if (results.length > 0) {
               firebase.firestore().collection("users").doc(userId).update({
-              otp: otpCode,
+              token: otpCode,
               }).then(() => {
                 Email.send({
                 secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",

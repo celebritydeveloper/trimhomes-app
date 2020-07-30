@@ -9,10 +9,18 @@
     
     <f7-page-content class="register">
     <div class="block block-strong">
-      <img :src="user" class="user">
+      <div  v-if="imageData!=null">
+        <img :src="picture" class="user">
+      </div>
+      
       <p>Upload a profile picture.
       <f7-icon class="text-black" slot="media" ios="f7:pencil" md="material:create"></f7-icon>
       </p>
+
+      <div>
+      <p>Progress: {{uploadValue.toFixed()+"%"}}
+      <progress id="progress" :value="uploadValue" max="100" ></progress>  </p>
+    </div>
       
     </div>
     <form @submit.prevent="submitted" no-store-data="true" class="list form-store-data" id="demo-form">
@@ -20,7 +28,7 @@
       <li class="item-content item-input">
           <div class="item-inner">
             <div class="item-input-wrap">
-              <input name="image" accept="image/*" type="file" @change="handleFileChangeuploadImage($event)">
+              <input name="image" accept="image/*" type="file" @change="previewImage">
             </div>
           </div>
       </li>
@@ -105,6 +113,7 @@ import logo from '../../images/logo-nav.png';
 import user from '../../images/user.png';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
+import 'firebase/storage'
 import OTP from 'otp-client';
 
 
@@ -114,14 +123,16 @@ const token = otp.getToken();
 
 const Email = { send: function (a) { return new Promise(function (n, e) { a.nocache = Math.floor(1e6 * Math.random() + 1), a.Action = "Send"; var t = JSON.stringify(a); Email.ajaxPost("https://smtpjs.com/v3/smtpjs.aspx?", t, function (e) { n(e) }) }) }, ajaxPost: function (e, n, t) { var a = Email.createCORSRequest("POST", e); a.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), a.onload = function () { var e = a.responseText; null != t && t(e) }, a.send(n) }, ajax: function (e, n) { var t = Email.createCORSRequest("GET", e); t.onload = function () { var e = t.responseText; null != n && n(e) }, t.send() }, createCORSRequest: function (e, n) { var t = new XMLHttpRequest; return "withCredentials" in t ? t.open(e, n, !0) : "undefined" != typeof XDomainRequest ? (t = new XDomainRequest).open(e, n) : t = null, t } };
 
-
+let pics;
 export default {
-  
+  name: "Upload",
   data() {
     return {
       logo,
       user,
-      image: null,
+      imageData: null,
+      picture: null,
+      uploadValue: 0,
       fullName: '',
       email: "",
       phone: "",
@@ -133,36 +144,25 @@ export default {
   },
   methods: {
 
-    uploadImage(event){
-
+    previewImage(event) {
+      this.uploadValue = 0;
+      this.picture = null;
+      this.imageData = event.target.files[0];
     },
 
     async submitted() {
       this.$f7.preloader.show();
       try {
-        // const user = firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(users => {
-        //   return 
-          firebase.firestore().collection("users").where("email", "==", this.email).get().then((snapshot) =>{
-            let results = snapshot.docs.map(doc => {
-              console.log(doc);
-            });
-            if (results.length > 0) {
-              this.$f7.preloader.hide();
-              this.$f7.dialog.alert("This Email Already Exists", "Error");
-            }else {
-            firebase.firestore().collection("users").add({
-            fullName: this.fullName,
-            email: this.email,
-            phone: this.phone,
-            password: "",
-            memorableNumber: this.memorableNumber,
-            city: this.city,
-            country: this.country,
-            otp: token,
-            postalCode: this.postalCode,
-            verified: false,
-            created: new Date()
-          }).then(() => {
+
+            const storageRef = firebase.storage().ref(`${this.imageData.name}`).put(this.imageData);
+            storageRef.on(`state_changed`,snapshot => {
+            this.uploadValue = (snapshot.bytesTransferred / snapshot.totalBytes)*100;
+          }, error => {console.log(error.message)},
+          () => {this.uploadValue = 100;
+            storageRef.snapshot.ref.getDownloadURL().then((url) => {
+              this.picture = url;
+              pics = url;
+            }).then(() => {
             Email.send({
               secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
               Host : "smtp.elasticemail.com",
@@ -181,17 +181,24 @@ export default {
           }).then(() => {
             const userInfo = {
               email: this.email,
+              city: this.city,
+              country: this.country,
+              fullName: this.fullName,
+              image: pics,
+              memorableNumber: this.memorableNumber,
+              phone: this.phone,
+              postalCode: this.postalCode,
+              verified: false,
+              created: new Date(),
               token
             }
             localStorage.setItem('trimhomesUser', JSON.stringify(userInfo));
           }).then(() => {
-          console.log(token);
-          console.log("It worker");
           this.$f7.preloader.hide();
           this.$f7router.navigate('/verify-token/');
         });
-            }
-          })
+        });
+            
           
       } catch (err) {
         console.log(err);

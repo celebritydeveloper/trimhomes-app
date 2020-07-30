@@ -6,13 +6,13 @@
       <p>Welcome to our exclusive collection of project and contributor community, where we pool resources to achieve our goals.</p>
       <f7-block-title class="login--title">Login</f7-block-title>
     </div>
-    <form class="list form-store-data" id="demo-form">
+    <form @submit.prevent="submitted" no-store-data="true" class="list form-store-data" id="demo-form">
       <ul>
         <li class="item-content item-input">
           <div class="item-inner">
             <div class="item-title item-label">E-mail</div>
             <div class="item-input-wrap">
-              <input name="email" type="email">
+              <input name="email" type="email" v-model="email">
               <span class="input-clear-button"></span>
             </div>
           </div>
@@ -21,14 +21,14 @@
           <div class="item-inner">
             <div class="item-title item-label">Password</div>
             <div class="item-input-wrap">
-              <input name="password" type="password">
+              <input name="password" type="password" v-model="password">
               <span class="input-clear-button"></span>
             </div>
           </div>
         </li>
         <li>
           <f7-button class="forgot-btn" href="/forgot-password/">Forgot password?</f7-button>
-          <f7-button class="login--btn">Sign In</f7-button>
+          <f7-button class="login--btn" type="submit">Sign In</f7-button>
         </li>
         
       </ul>
@@ -41,10 +41,50 @@
 </template>
 <script>
 import logo from '../../images/logo-small.png';
+import * as firebase from 'firebase/app';
+import 'firebase/firestore';
+import 'firebase/auth';
+
+
 export default {
   data() {
     return {
       logo,
+      email: '',
+      password: '',
+    }
+  },
+  methods: {
+    async submitted() {
+      this.$f7.preloader.show();
+      if(this.email.trim() !== "" && this.password.trim() !== "") {
+        try {
+          firebase.auth().signInWithEmailAndPassword(this.email, this.password).then(() => {
+            
+        }).then(()=> {
+            this.$f7.preloader.hide();
+            this.$f7router.navigate('/home1/');
+        }).catch (error => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          this.$f7.preloader.hide();
+          console.log(error);
+          this.$f7.dialog.alert(errorMessage, errorCode);
+        }); 
+          
+      } catch (error) {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        this.$f7.preloader.hide();
+        console.log(error);
+        this.$f7.dialog.alert(errorMessage, "Error");
+      }
+      return true;
+      }else {
+        this.$f7.preloader.hide();
+        this.$f7.dialog.alert("Input fields must not be empty", "Error");
+      }
+      
     }
   },
   components: {},
