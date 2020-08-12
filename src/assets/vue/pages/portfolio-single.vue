@@ -8,7 +8,7 @@
     </f7-navbar>
     <f7-toolbar tabbar labels :position="isBottom ? 'bottom' : 'top'">
       <f7-link tab-link="#tab-1" tab-link-active text="Home" icon-ios="f7:house_fill" icon-aurora="f7:house_fill" icon-md="material:home"></f7-link>
-      <f7-link tab-link="#tab-2" text="Properties" icon-ios="f7:building_2_fill" icon-aurora="f7:building_2_fill" icon-md="material:local_offer"></f7-link>
+      <f7-link tab-link="#tab-2" text="Projects" icon-ios="f7:building_2_fill" icon-aurora="f7:building_2_fill" icon-md="material:apartment"></f7-link>
       <f7-link tab-link="#tab-3" text="My Portfolio" icon-ios="f7:briefcase" icon-aurora="f7:briefcase" icon-md="material:work"></f7-link>
       <f7-link tab-link="#tab-4" text="Support" icon-ios="f7:question_circle" icon-aurora="f7:question_circle" icon-md="material:help_outline"></f7-link>
       <f7-link tab-link="" raised panel-open="right" cover text="More" icon-ios="f7:bars" icon-aurora="f7:bars" icon-md="material:menu"></f7-link>
@@ -29,48 +29,107 @@
     <f7-page-content class="confirm">
 
         <f7-swiper pagination>
-            <f7-swiper-slide class="slide-img"><img :src="currentProperty.image"></f7-swiper-slide>
+            <f7-swiper-slide class="slide-img"><img :src="slide"></f7-swiper-slide>
+            <f7-swiper-slide class="slide-img"><img :src="home"></f7-swiper-slide>
+            <f7-swiper-slide class="slide-img"><img :src="slide"></f7-swiper-slide>
         </f7-swiper>
 
         <div class="project-top">
             <p class="project-type">
                 {{currentProperty.Title}}
-                <!--<span class="project-location" v-for="(location, index) in currentProperty.Location" :key="index">
-                  {{currentProperty.Location}},
-                  </span>-->
-                  <span class="project-location">
-                  {{currentProperty.Location}},
+                <span class="project-location" v-for="(location, index) in currentProperty.Location" :key="index">
+                  {{location}},
                   </span>
+                <span class="project-price">{{convertCurrency(currentProperty.SalePrice)}}</span>
             </p>
+            <p class="register--btn" @click="$refs.actionsOneGroup.open()">Withdraw</p>
         </div>
 
         <f7-block class="project-icons">
         <f7-row>
-            <f7-col v-for="(icon, index) in currentProperty.Amenities" :key="index">
+            <f7-col>
                 <f7-card class="info-card">
                     <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:credit_card"></f7-icon>
-                    <p class="info-text">{{icon}}</p>
+                    <p class="info-text">3 Baths</p>
+                </f7-card>
+            </f7-col>
+            <f7-col>
+                <f7-card class="info-card">
+                    <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:credit_card"></f7-icon>
+                    <p class="info-text">3 Toilets</p>
+                </f7-card>
+            </f7-col>
+            <f7-col>
+                <f7-card class="info-card">
+                    <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:credit_card"></f7-icon>
+                    <p class="info-text">{{currentProperty.Bedrooms}} Room</p>
+                </f7-card>
+            </f7-col>
+            <f7-col>
+                <f7-card class="info-card">
+                    <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:credit_card"></f7-icon>
+                    <p class="info-text">Garage</p>
                 </f7-card>
             </f7-col>
         </f7-row>
         </f7-block>
 
-         <f7-block class="project-info-block">
+        <f7-block class="project-info-block">
+          <div class="project-info">
+                <p class="project-info-title">Type</p>
+                <p class="project-info-text" v-for="(type, index) in currentProperty.Type" :key="index">
+                  <span class="inline">{{type}}, </span>
+                </p>
+            </div>
              <div class="project-info">
-                <p class="project-info-title">Outright Purchase</p>
-                <p class="project-info-text">Buy this entire property from TRIM HOMES for full ownership</p>
-                <div class="price">
-                  <span class="project-price">{{convertCurrency(currentProperty.Outright)}}</span>
-                  <span class="register--btn" @click="$refs.actionsOneGroup.open()">Buy Outright</span>
-                </div>
+                <p class="project-info-title">Tenure</p>
+                <p class="project-info-text" v-for="(tenure, index) in currentProperty.Tenure" :key="index">
+                  <span class="inline">{{tenure}}, </span>
+                </p>
             </div>
             <div class="project-info">
-                <p class="project-info-title">Part-Purchase</p>
-                <p class="project-info-text">Buy a part of this property to own a share of it and earn rental income monthly.</p>
-                <div class="price">
-                  <span class="project-price">{{convertCurrency(currentProperty.Outright)}}</span>
-                  <span class="register--btn" @click="$refs.actionsOneGroup.open()">Buy a Share</span>
-                </div>
+                <p class="project-info-title">Actual Annual Rental Income</p>
+                <p class="project-info-text">{{convertCurrency(currentProperty.ActualAnnualRentalIncome)}}</p>
+            </div>
+            <div class="project-info">
+                <p class="project-info-title">Capital Gains Tax</p>
+                <p class="project-info-text">{{convertCurrency(currentProperty.CapitalGainsTax)}}</p>
+            </div>
+            <div class="project-info">
+                <p class="project-info-title">Deposit</p>
+                <p class="project-info-text">{{convertCurrency(currentProperty.Deposit)}}</p>
+            </div>
+            <div class="project-info">
+                <p class="project-info-title">Estimated Annual Rental Income</p>
+                <p class="project-info-text">{{convertCurrency(currentProperty.EstimatedAnnualRentalIncome)}}</p>
+            </div>
+            <div class="project-info">
+                <p class="project-info-title">Estimated Monthly Rental Income</p>
+                <p class="project-info-text">{{convertCurrency(currentProperty.EstimatedMonthlyRentalIncome)}}</p>
+            </div>
+            <div class="project-info">
+                <p class="project-info-title">Guide Price</p>
+                <p class="project-info-text">{{convertCurrency(currentProperty.GuidePrice)}}</p>
+            </div>
+            <div class="project-info">
+                <p class="project-info-title">ROI On Sale</p>
+                <p class="project-info-text">{{convertCurrency(currentProperty.ROIOnSale)}}</p>
+            </div>
+            <div class="project-info">
+                <p class="project-info-title">ROI Percentage</p>
+                <p class="project-info-text">{{currentProperty.ROIPercentage}}%</p>
+            </div>
+            <div class="project-info">
+                <p class="project-info-title">Rental Expenses</p>
+                <p class="project-info-text">{{convertCurrency(currentProperty.RentalExpenses)}}</p>
+            </div>
+            <div class="project-info">
+                <p class="project-info-title">Total Cash Required</p>
+                <p class="project-info-text">{{convertCurrency(currentProperty.TotalCashRequired)}}</p>
+            </div>
+            <div class="project-info">
+                <p class="project-info-title">Short Summary</p>
+                <p class="project-info-text">{{currentProperty.ShortSummary}}</p>
             </div>
         </f7-block>
 
@@ -83,7 +142,6 @@
             >
             <f7-page-content>
                 <f7-block>
-                  <p class="request-title">How much do you want to buy?</p>
                 <form @submit.prevent="makeRequest" no-store-data="true" class="list form-store-data" id="demo-form">
                   <ul>
                     <li class="item-content item-input">
@@ -94,14 +152,11 @@
                         </div>
                       </div>
                     </li>
+                    <li>
+                      <f7-button class="verify--btn" type="submit">Make Request</f7-button>
+                    </li>
                     
                   </ul>
-                  <p class="request-income">Your Monthly Rental Income:
-                    <span>{{convertCurrency(50)}}</span>
-                  </p>
-                  <p class="request-info">Based on your purchase amount entered above, your monthly rental income of <strong>{{convertCurrency(50)}}</strong> will be paid on the last day of next month.</p>
-
-                  <f7-button class="verify--btn" type="submit">Proceed to Payment</f7-button>
                 </form>
                 </f7-block>
             </f7-page-content>
@@ -123,7 +178,7 @@ import 'firebase/firestore';
 
 const Email = { send: function (a) { return new Promise(function (n, e) { a.nocache = Math.floor(1e6 * Math.random() + 1), a.Action = "Send"; var t = JSON.stringify(a); Email.ajaxPost("https://smtpjs.com/v3/smtpjs.aspx?", t, function (e) { n(e) }) }) }, ajaxPost: function (e, n, t) { var a = Email.createCORSRequest("POST", e); a.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), a.onload = function () { var e = a.responseText; null != t && t(e) }, a.send(n) }, ajax: function (e, n) { var t = Email.createCORSRequest("GET", e); t.onload = function () { var e = t.responseText; null != n && n(e) }, t.send() }, createCORSRequest: function (e, n) { var t = new XMLHttpRequest; return "withCredentials" in t ? t.open(e, n, !0) : "undefined" != typeof XDomainRequest ? (t = new XDomainRequest).open(e, n) : t = null, t } };
 
-let userId;
+//let userId;
 let userInfo;
 let userEmail;
 let userName;
@@ -131,17 +186,16 @@ let data;
 
 export default {
     data() {
-      return {
-        logo,
-        amount: '',
-        home,
-        slide,
-        isBottom: true,
-        properties: [],
-        currentProperty: {},
-        userName,
-        //userUid,
-      }
+    return {
+      logo,
+      amount: '',
+      home,
+      slide,
+      isBottom: true,
+      properties: [],
+      currentProperty: {},
+      userName,
+    }
   },
   mounted() {
     if (localStorage.getItem('trimhomeUser'));
@@ -161,7 +215,7 @@ export default {
       // email = user.email;
       // photoUrl = user.photoURL;
       // emailVerified = user.emailVerified;
-      this.userUid = user.uid;
+      // uid = user.uid;
     }else {
       this.$f7router.navigate('/login/');
     }
@@ -175,17 +229,23 @@ export default {
       f7Sheet,
   },
   methods: {
+    openDialog() {
+        this.$f7.dialog.confirm('Are you feel good today?', function () {
+        this.$f7.dialog.alert('Great!');
+      });
+    },
     fetchByParam() {
       firebase.firestore().collection("properties").get().then((snapshot) => {
             snapshot.docs.forEach(doc => {
               data = doc;
               this.properties.push(data);
+              //console.log(this.properties);
             })
         }).then(() => {
           for (let i = 0; i < this.properties.length; i++) {
-        if( this.properties.id === this.getParam) {
-            console.log("Param is the same");
-            this.currentProperty = this.properties[i].data();
+        if( this.properties.id == this.getParam) {
+            console.log("True");
+            this.currentProperty = this.properties[0].data();
             console.log(this.currentProperty);
           }    
         }
@@ -212,16 +272,6 @@ export default {
               Price: this.currentProperty.SalePrice,
               Location: this.currentProperty.Location,
               Date: new Date()
-            }).then(() => {
-              firebase.firestore().collection("Portfolio").add({
-              Name: this.userName,
-              Email: this.emailAddress,
-              Amount: this.amount,
-              Property: this.currentProperty.Title,
-              Price: this.currentProperty.SalePrice,
-              Location: this.currentProperty.Location,
-              Date: new Date()
-            });
             }).then(() => {
               Email.send({
                 secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
@@ -256,7 +306,7 @@ export default {
             }).then(
               message => console.log(message)
             );
-            this.$f7.dialog.alert(`Your request have been successfully sent to Admin!`, "Congratulations");
+            this.$f7.dialog.alert(`You have successfully invested in this property`, "Success");
             this.$refs.actionsOneGroup.close();
             }).then(() => {
             this.$f7.preloader.hide();
@@ -331,23 +381,19 @@ export default {
 
     .project-type {
         display: flex;
-        color: #2B3D4C;;
         flex-direction: column;
-        font-size:1.5rem;
+        font-size:1.1rem;
         font-weight: 500;
-        margin-top: 0.2rem;
     }
 
     .project-type span {
-      color: #2B3D4C;;
-      font-size: 1.1rem;
-      font-weight: lighter;
+        font-size:0.7rem;
+        font-weight: lighter;
     }
 
     .project-location {
       display: flex !important;
       flex-direction: row !important;
-      font-size: 1.3rem;
     }
 
     .project-price {
@@ -357,7 +403,7 @@ export default {
         font-size: 0.9rem !important;
         font-weight: bold !important;
         margin-top: 0.3rem;
-        padding: 0.3rem 0rem;
+        padding: 0.3rem 0.4rem;
         text-align: center;
         width: 50%;
     }
@@ -388,40 +434,6 @@ export default {
         font-size: 0.7rem;
         margin: 0;
         padding: 0;
-    }
-
-    .price {
-      align-items: center;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .request-title {
-      font-size: 1.2rem;
-      font-weight: bold;
-      text-align: center;
-    }
-
-    .request-income {
-      align-items: center;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .request-income span {
-      background: rgba(7, 153, 144, 0.4);
-      border-radius: 10px;
-      display: block;
-      font-size: 1.1rem;
-      margin: 0 auto;
-      padding: 0.2rem 1rem;
-      text-align: center;
-      width: 30%;
-    }
-
-    .request-info {
-      font-size: 0.9rem;
-      text-align: center;
     }
 
     .inline {
@@ -575,7 +587,7 @@ export default {
   }
 
   .list .item-content .item-inner .item-input-wrap input {
-    font-size: 1.5rem;
+    font-size: 1.1rem;
     padding-bottom: 0rem;
     text-align: center;
   }

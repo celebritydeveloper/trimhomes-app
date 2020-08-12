@@ -2,7 +2,7 @@
   <f7-page class="home" ptr @ptr:refresh="loadMore">
     <f7-navbar class="home--nav">
     <f7-nav-left>
-        Home
+        Trimhomes
       </f7-nav-left>
       <f7-nav-right>
         <img :src="logo" class="logo">
@@ -10,7 +10,7 @@
     </f7-navbar>
     <f7-toolbar tabbar labels :position="isBottom ? 'bottom' : 'top'">
       <f7-link tab-link="#tab-1" tab-link-active text="Home" icon-ios="f7:house_fill" icon-aurora="f7:house_fill" icon-md="material:home"></f7-link>
-      <f7-link tab-link="#tab-2" text="Projects" icon-ios="f7:building_2_fill" icon-aurora="f7:building_2_fill" icon-md="material:apartment"></f7-link>
+      <f7-link tab-link="#tab-2" text="Properties" icon-ios="f7:building_2_fill" icon-aurora="f7:building_2_fill" icon-md="material:local_offer"></f7-link>
       <f7-link tab-link="#tab-3" text="My Portfolio" icon-ios="f7:briefcase" icon-aurora="f7:briefcase" icon-md="material:work"></f7-link>
       <f7-link tab-link="#tab-4" text="Support" icon-ios="f7:question_circle" icon-aurora="f7:question_circle" icon-md="material:help_outline"></f7-link>
       <f7-link tab-link="" raised panel-open="right" cover text="More" icon-ios="f7:bars" icon-aurora="f7:bars" icon-md="material:menu"></f7-link>
@@ -24,30 +24,18 @@
         <f7-link class="panel-link" href="/">My Profile</f7-link>
         <f7-link class="panel-link" href="/">My Earnings</f7-link>
         <f7-link class="panel-link" href="/">Settings</f7-link>
-        <f7-link class="panel-link" @click="logout">Logout</f7-link>
+        <f7-link class="panel-link" panel-close  @click="logout">Logout</f7-link>
       </f7-page>
     </f7-view>
   </f7-panel>
 
     <f7-page-content class="confirm">
-    <div class="top-bar">
-      Welcome, {{name}}
-    </div>
+    
     <f7-tabs>
       <f7-tab id="tab-1" class="page-conten" tab-active>
-        <f7-list  media-list class="listing">
-          <f7-list-item
-                v-for="property in properties" 
-                :key="property.id"
-                class="listing-item"
-                link="/project-single/"
-                :title="property.Title"
-                :subtitle="property.SalePrice"
-                :text="property.ShortSummary"
-            >
-                <img slot="media" :src="home" height="80" width="80" />
-          </f7-list-item>
-          </f7-list>
+          <div class="top-bar">
+            Welcome, {{name}}
+          </div>
             <f7-card class="info-card">
               <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:credit_card"></f7-icon>
               <p class="info-title">Part-purchase a property</p>
@@ -61,50 +49,30 @@
               <f7-button class="info-btn">Update Now</f7-button>
             </f7-card>
       </f7-tab>
-      <f7-tab id="tab-2" class="page-conten">
-          <f7-list  media-list class="listing">
-            <f7-list-item 
-                class="listing-item"
-                link="#"
-                title="5 BHK Luxury House"
-                subtitle="£ 192,000"
-                text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-            >
-                <img slot="media" :src="home" height="80" width="80" />
-          </f7-list-item>
-          <f7-list-item
-                class="listing-item"
-                link="#"
-                title="5 Park Lane"
-                subtitle="£ 150,000"
-                text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-            >
-                <img slot="media" :src="home" height="80" width="80" />
-          </f7-list-item>
-          </f7-list>
+      <f7-tab id="tab-2" class="page-conten" name="Properties">
+          <Project />
       </f7-tab>
-      <f7-tab id="tab-3" class="page-conten">
-        <f7-list  media-list class="listing">
-            <f7-list-item 
-                class="listing-item"
-                link="#"
-                title="5 BHK Luxury House"
-                subtitle="£ 192,000"
-                text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-            >
-                <img slot="media" :src="home" height="80" width="80" />
-          </f7-list-item>
-          <f7-list-item
-                class="listing-item"
-                link="#"
-                title="5 Park Lane"
-                subtitle="£ 150,000"
-                text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-            >
-                <img slot="media" :src="home" height="80" width="80" />
-          </f7-list-item>
-          </f7-list>
+      <f7-tab id="tab-3" class="page-conten" name="My Portfolio">
+        <div class="card card-outline user-card">
+          <div class="card-header user-detail">
+            <img :src="user" alt="" class="user-image">
+            <p class="user-name">Saviour Essien</p>
+            <p class="user-location"><f7-icon ios="f7:placemark" aurora="f7:placemark" md="material:location_on"></f7-icon> London, England</p>
+          </div>
+          <div class="card-content invest-list">
+            <div class="invest-item">
+              <p class="invest-amount">{{convertCurrency(5000)}}</p>
+              <p class="invest-title">Investment</p>
+            </div>
+            <div class="invest-item">
+              <p class="invest-amount">{{convertCurrency(55)}}</p>
+              <p class="invest-title">Monthly Income</p>
+            </div>
+          </div>
+        </div>
+        <Portfolio />
       </f7-tab>
+
       <f7-tab id="tab-4" class="page-content">
         <f7-block>
           <p>Support Form</p>
@@ -118,7 +86,11 @@
 </template>
 <script>
 import logo from '../../images/logo-nav.png';
+import user from '../../images/user.png';
 import home from '../../images/home.jpg';
+
+import Project from '../../components/project';
+import Portfolio from '../../components/portfolio';
 
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -129,6 +101,7 @@ export default {
     data() {
     return {
       logo,
+      user,
       home,
       name: null,
       isBottom: true,
@@ -143,11 +116,15 @@ export default {
        }, 1000);
     },
 
+    convertCurrency(value) {
+        return new Intl.NumberFormat('en-EN', { style: 'currency', currency: 'GBP' }).format(value);
+    },
+
     logout() {
       firebase.auth().signOut().then(function() {
-        // Sign-out successful.
+        this.$f7router.navigate('/login/');
       }).catch(function(error) {
-        // An error happened.
+        this.$f7.dialog.alert(error.message, "Error");
       });
     },
 
@@ -167,21 +144,18 @@ export default {
       }
   }
   },
-  components: {},
+  components: {
+    Project,
+    Portfolio
+  },
 
   mounted(){
-    firebase.firestore().collection("properties").get().then((snapshot) => {
-            snapshot.docs.map(doc => {
-              data = doc.data();
-              this.properties.push(data); 
-              console.log(this.properties);
-        });
-    });
+    firebase.auth().onAuthStateChanged(users => {
+    if(users) {
+        const user = firebase.auth().currentUser;
+      let name, email, photoUrl, uid, emailVerified;
 
-    const user = firebase.auth().currentUser;
-    let name, email, photoUrl, uid, emailVerified;
-
-    if (user != null) {
+     if (user != null) {
       this.name = user.displayName;
       // email = user.email;
       // photoUrl = user.photoURL;
@@ -190,6 +164,13 @@ export default {
     }else {
       this.$f7router.navigate('/login/');
     }
+    }else {
+        this.$f7router.navigate('/login/');
+        console.log("User logged out");
+    }
+});
+
+    
     
     // axios.get('https://firestore.googleapis.com/v1/projects/trimhomesapp/databases/(default)/documents/properties')
     // .then((response) => data = response);
@@ -232,6 +213,62 @@ export default {
       text-align: center;
     }
 
+    .user-detail {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .user-image {
+      height: auto;
+      width: 80px;
+    }
+
+    .user-name {
+      color: #2B3D4C;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 0;
+      margin-top: 0.4rem;
+      padding: 0;
+    }
+
+    .user-location {
+      color: #2B3D4C;
+      font-weight: lighter;
+      margin-top: 0.4rem;
+      padding: 0;
+    }
+
+    .invest-list {
+      align-items: center;
+      display: flex;
+      justify-content: space-around;
+      padding-bottom: 0.4rem;
+      padding-top: 0.4rem;
+    }
+
+    .invest-item {
+      text-align: center;
+    }
+
+    .invest-amount {
+      color: #2B3D4C;
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin: 0;
+      padding: 0;
+    }
+
+    .invest-title {
+      color: #2B3D4C;
+      font-size: 1.2rem;
+      margin-top: 0.1rem;
+      margin-bottom: 0;
+      padding: 0;
+    }
+
     .listing {
         margin-top: 0;
         margin-bottom: 0.3rem;
@@ -253,6 +290,11 @@ export default {
     .listing .listing-item .item-subtitle {
       display: none !important;
       background: blue;
+    }
+
+    .listing .listing-item .item-text {
+      display: none !important;
+      background: red;
     }
 
     .listing .listing-item .item-inner::after{

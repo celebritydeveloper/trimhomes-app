@@ -28,51 +28,31 @@
 
     <f7-page-content class="confirm">
 
-        <f7-swiper pagination>
-            <f7-swiper-slide class="slide-img"><img :src="currentProperty.image"></f7-swiper-slide>
-        </f7-swiper>
-
-        <div class="project-top">
-            <p class="project-type">
-                {{currentProperty.Title}}
-                <!--<span class="project-location" v-for="(location, index) in currentProperty.Location" :key="index">
-                  {{currentProperty.Location}},
-                  </span>-->
-                  <span class="project-location">
-                  {{currentProperty.Location}},
-                  </span>
-            </p>
-        </div>
-
-        <f7-block class="project-icons">
-        <f7-row>
-            <f7-col v-for="(icon, index) in currentProperty.Amenities" :key="index">
-                <f7-card class="info-card">
-                    <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:credit_card"></f7-icon>
-                    <p class="info-text">{{icon}}</p>
-                </f7-card>
-            </f7-col>
-        </f7-row>
-        </f7-block>
-
-         <f7-block class="project-info-block">
-             <div class="project-info">
-                <p class="project-info-title">Outright Purchase</p>
-                <p class="project-info-text">Buy this entire property from TRIM HOMES for full ownership</p>
-                <div class="price">
-                  <span class="project-price">{{convertCurrency(currentProperty.Outright)}}</span>
-                  <span class="register--btn" @click="$refs.actionsOneGroup.open()">Buy Outright</span>
+        <f7-toolbar tabbar bottom>
+            <f7-link tab-link="#tab-1" tab-link-active>Bank Details</f7-link>
+            <f7-link tab-link="#tab-2">Paypal</f7-link>
+        </f7-toolbar>
+        <f7-tabs swipeable>
+            <f7-tab id="tab-1" class="page-content" tab-active>
+            <f7-block class="bank-detail">
+                <p><f7-icon ios="f7:placemark" aurora="f7:placemark" md="material:account_balance_wallet"></f7-icon></p>
+                <div>
+                    <p class="acc-title">Account Number</p>
+                    <p class="acc-detail">0234102010</p>
                 </div>
-            </div>
-            <div class="project-info">
-                <p class="project-info-title">Part-Purchase</p>
-                <p class="project-info-text">Buy a part of this property to own a share of it and earn rental income monthly.</p>
-                <div class="price">
-                  <span class="project-price">{{convertCurrency(currentProperty.Outright)}}</span>
-                  <span class="register--btn" @click="$refs.actionsOneGroup.open()">Buy a Share</span>
+                <div>
+                    <p class="acc-title">Account Name</p>
+                    <p class="acc-detail">TrimHomes Limited</p>
                 </div>
-            </div>
-        </f7-block>
+            </f7-block>
+            </f7-tab>
+            <f7-tab id="tab-2" class="page-content">
+            <f7-block>
+                <p>Tab 2 content</p>
+                ...
+            </f7-block>
+            </f7-tab>
+        </f7-tabs>
 
         <!-- Swipe to close demo sheet -->
         <f7-sheet ref="actionsOneGroup"
@@ -312,117 +292,21 @@ export default {
       padding-top: 0;
     }
 
-    .slide-img {
-        height: 280px;
-        width: 100%;
-    }
-
-    .slide-img img{
-        object-fit: cover;
-        width: 100%;
-    }
-
-    .project-top {
-        align-items: center;
-        display: flex;
-        justify-content: space-between;
-        padding: 0 1rem;
-    }
-
-    .project-type {
-        display: flex;
-        color: #2B3D4C;;
-        flex-direction: column;
-        font-size:1.5rem;
-        font-weight: 500;
-        margin-top: 0.2rem;
-    }
-
-    .project-type span {
-      color: #2B3D4C;;
-      font-size: 1.1rem;
-      font-weight: lighter;
-    }
-
-    .project-location {
-      display: flex !important;
-      flex-direction: row !important;
-      font-size: 1.3rem;
-    }
-
-    .project-price {
-        background: rgba(7, 153, 144, 0.4);
-        color: rgb(43, 61, 76);
-        border-radius: 0.3rem;
-        font-size: 0.9rem !important;
-        font-weight: bold !important;
-        margin-top: 0.3rem;
-        padding: 0.3rem 0rem;
-        text-align: center;
-        width: 50%;
-    }
-
-    .project-icons {
-        margin: 0.3rem 0 0.3rem 0;
-    }
-
-    .project-info-block {
-        margin: 2.2rem 0 0.2rem 0;
-    }
-
-    .project-info {
-        margin-bottom: 0.8rem;
-    }
-
-    .project-info-title {
-        color: #2B3D4C;
-        font-size: 1rem;
-        font-weight: 500;
+    .acc-title {
+        font-size: 1.1rem;
         margin: 0;
         padding: 0;
     }
 
-    .project-info-text {
-        color: #2B3D4C;
-        display: inline;
-        font-size: 0.7rem;
+
+    .acc-detail {
+        font-size: 1.6rem;
+        font-weight: bolder;
         margin: 0;
         padding: 0;
     }
 
-    .price {
-      align-items: center;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .request-title {
-      font-size: 1.2rem;
-      font-weight: bold;
-      text-align: center;
-    }
-
-    .request-income {
-      align-items: center;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .request-income span {
-      background: rgba(7, 153, 144, 0.4);
-      border-radius: 10px;
-      display: block;
-      font-size: 1.1rem;
-      margin: 0 auto;
-      padding: 0.2rem 1rem;
-      text-align: center;
-      width: 30%;
-    }
-
-    .request-info {
-      font-size: 0.9rem;
-      text-align: center;
-    }
+    
 
     .inline {
       display: inline;

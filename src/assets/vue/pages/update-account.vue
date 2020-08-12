@@ -1,121 +1,50 @@
 <template>
   <f7-page>
   <f7-navbar class="home--nav">
-    <f7-navbar back-link="Create Account" back-link-show-text></f7-navbar>
+    <f7-navbar back-link="Update Bank Details" back-link-show-text></f7-navbar>
       <f7-nav-right>
         <img :src="logo" class="logo">
       </f7-nav-right>
     </f7-navbar>
     
     <f7-page-content class="register">
-    <div class="block block-strong">
-      <!--<div   class="dp">
+    <div class="image">
+      <div class="dp">
         <img :src="user" class="user">
-        <p>{{uploadValue.toFixed() + "%"}}
-      <progress id="progress" :value="uploadValue" max="100" ></progress>  </p>
-      </div>-->
-      
-
-
-      <div>
-      
-    </div>
+      </div>
       
     </div>
     <form @submit.prevent="submitted" no-store-data="true" class="list form-store-data" id="demo-form">
       <ul>
-      <li class="item-content item-input image">
-          <div class="item-inner">
-            <div class="item-input-wrap">
-            
-              <label for="image">
-                <img :src="user" class="user">
-              </label>
-              
-              <div class="dp">
-                <input name="image" id="image" class="upload" accept="image/*" type="file" @change="previewImage" required validate data-error-message="Please upload your image!">
-                <p>{{uploadValue.toFixed() + "%"}}
-                <progress id="progress" :value="uploadValue" max="100" ></progress>  </p>
-              </div>
-            </div>
-          </div>
-      </li>
       <li class="item-content item-input">
           <div class="item-inner">
-            <div class="item-title item-label">First Name</div>
+            <div class="item-title item-label">Account Name</div>
             <div class="item-input-wrap">
-              <input name="fullName" type="text" v-model="fullName" required validate data-error-message="Your Name is Required!">
+              <input name="AccName" type="text" v-model="AccName">
               <span class="input-clear-button"></span>
             </div>
           </div>
         </li>
         <li class="item-content item-input">
           <div class="item-inner">
-            <div class="item-title item-label">Surname</div>
+            <div class="item-title item-label">Account Number</div>
             <div class="item-input-wrap">
-              <input name="fullName" type="text" v-model="fullName" required validate data-error-message="Your Name is Required!">
+              <input name="AccNumber" type="number" v-model="AccNumber" validate pattern="[0-9]*" data-error-message="Only numbers please!">
               <span class="input-clear-button"></span>
             </div>
           </div>
         </li>
         <li class="item-content item-input">
           <div class="item-inner">
-            <div class="item-title item-label">E-mail</div>
+            <div class="item-title item-label">Bank Name</div>
             <div class="item-input-wrap">
-              <input name="email" type="email" v-model="email" autocomplete="off" required validate data-error-message="Email must not be empty and should be valid!">
+              <input name="bankName" type="text" v-model="bankName" autocomplete="off">
               <span class="input-clear-button"></span>
-            </div>
-          </div>
-        </li>
-        <li class="item-content item-input">
-          <div class="item-inner">
-            <div class="item-title item-label">Phone Number</div>
-            <div class="item-input-wrap">
-              <input name="phone" type="tel" v-model="phone" required validate pattern="[0-9]*" data-error-message="Only numbers please!">
-              <span class="input-clear-button"></span>
-            </div>
-          </div>
-        </li>
-        <li class="item-content item-input">
-          <div class="item-inner">
-            <div class="item-title item-label">Memorable Number</div>
-            <div class="item-input-wrap">
-              <input name="password" type="text" v-model="memorableNumber" required validate pattern="[0-9]*" data-error-message="Only numbers please!">
-              <span class="input-clear-button"></span>
-            </div>
-          </div>
-        </li>
-        <li class="item-content item-input">
-          <div class="item-inner">
-            <div class="item-title item-label">Address:</div>
-            <div class="item-input-wrap">
-              <input name="address" type="text" v-model="address" required validate>
-              <span class="input-clear-button"></span>
-            </div>
-          </div>
-        </li>
-        <li class="item-content item-input">
-          <div class="item-inner">
-            <div class="item-title item-label">How Did You Hear About Us?:</div>
-            <div class="item-input-wrap input-dropdown-wrap">
-              <select>
-                <option disabled selected>Please Select an Option</option>
-                <option value="Male">Family</option>
-                <option value="Female">Friend</option>
-                <option value="Private Institution">Private Institution</option>
-                <option value="Advert">Advert</option>
-                <option value="Social Media">Social Media</option>
-                <option value="Member of Staff">Member of Staff</option>
-              </select>
             </div>
           </div>
         </li>
         <li>
-          <p class="terms">By clicking ‘Create Account’, you agree to our  
-          <f7-link class="forgot-btn" href="/forgot-password/">Terms &amp; Conditions</f7-link> 
-          and our  
-          <f7-link class="forgot-btn" href="/forgot-password/"> Privacy Policy.</f7-link></p>
-          <f7-button class="register--btn" type="submit">Create Account</f7-button>
+          <f7-button class="register--btn" type="submit">Update Bank Account</f7-button>
         </li>
         
       </ul>
@@ -146,16 +75,9 @@ export default {
       errors: [],
       logo,
       user,
-      imageData: null,
-      picture: null,
-      uploadValue: 0,
-      fullName: '',
-      email: "",
-      phone: "",
-      memorableNumber: "",
-      city: "",
-      address: "",
-      postalCode: "",
+      AccName: '',
+      AccNumber: '',
+      bankName: "",
     }
   },
   methods: {
@@ -258,28 +180,13 @@ export default {
     flex-direction: column;
     padding-bottom: 20px;
     padding-top: 0px;
-    padding-left: 10px;
-    padding-right: 10px;
 
-  }
-
-  .block-strong {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    margin-bottom: 5px;
-    margin-top: 15px;
-    padding-top: 10px;
-    padding-bottom: 5px;
-  }
-
-  .block-strong::before, .block-strong::after{
-    height: 0px;
-    width: 0px;
   }
 
   .image {
+    background: #2B3D4C;
+    margin-bottom: 2.5rem;
+    padding: 1.5rem 0;
     text-align: center;
   }
 
@@ -293,9 +200,13 @@ export default {
 
   .user {
     border-radius: 50%;
-    height: 100px;
+    height: 80px;
     object-fit: cover;
-    width: 100px;
+    width: 80px;
+  }
+
+  .upload-text {
+      color: #fff;
   }
 
   .upload::-webkit-file-upload-button {
@@ -401,7 +312,7 @@ export default {
     background: #2B3D4C;
     border-radius: 0px;
     color: #fff;
-    margin: 0 auto;
+    margin: 1rem auto 0 auto;
     width: 90%;
   }
 
