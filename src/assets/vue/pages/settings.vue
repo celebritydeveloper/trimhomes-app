@@ -9,7 +9,7 @@
     <!--<f7-navbar back-link="Back"></f7-navbar>-->
     <f7-page-content class="confirm">
       <div class="user-image">
-        <img :src="user" alt="">
+        <img :src="image" alt="" class="user-image">
       </div>
       <div class="list no-chevron setting-menu">
         <ul>
@@ -21,7 +21,7 @@
               <div class="item-inner">
                 <div class="item-title">
                   <div class="item-header">Name</div>
-                  Saviour Essien
+                  {{name}}
                 </div>
               </div>
             </a>
@@ -34,13 +34,13 @@
               <div class="item-inner">
                 <div class="item-title">
                   <div class="item-header">Email</div>
-                  essiensaviour.a@gmail.com
+                  {{email}}
                 </div>
               </div>
             </a>
           </li>
           <li>
-            <a href="#" class="item-link item-content">
+            <a href="/update-password/" class="item-link item-content">
               <div class="item-media">
                 <f7-icon ios="f7:lock" aurora="f7:lock" md="material:vpn_key"></f7-icon>
               </div>
@@ -56,14 +56,14 @@
             </a>
           </li>
           <li>
-            <a href="#" class="item-link item-content">
+            <a href="/update-account/" class="item-link item-content">
               <div class="item-media">
                 <f7-icon ios="f7:creditcard" aurora="f7:creditcard" md="material:payment"></f7-icon>
               </div>
               <div class="item-inner">
                 <div class="item-title">
                   <div class="item-header">Bank Details</div>
-                  Barclays Bank
+                  {{bankName}}
                 </div>
                 <div class="item-after">
                   <f7-icon ios="f7:pencil" aurora="f7:pencil" md="material:edit"></f7-icon>
@@ -72,7 +72,7 @@
             </a>
           </li>
           <li>
-            <a href="#" class="item-link item-content">
+            <a href="/update-profile/" class="item-link item-content">
               <div class="item-media">
                 <f7-icon ios="f7:person_fill" aurora="f7:person_fill" md="material:accessibility"></f7-icon>
               </div>
@@ -86,7 +86,7 @@
               </div>
             </a>
           </li>
-          <li>
+          <!--<li>
             <a href="#" class="item-link item-content">
               <div class="item-inner">
                 <div class="item-title">
@@ -94,7 +94,7 @@
                 </div>
               </div>
             </a>
-          </li>
+          </li>-->
         </ul>
       </div>
     
@@ -103,120 +103,117 @@
 </template>
 <script>
 import logo from '../../images/logo-nav.png';
-import user from '../../images/user.png';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
 
 const Email = { send: function (a) { return new Promise(function (n, e) { a.nocache = Math.floor(1e6 * Math.random() + 1), a.Action = "Send"; var t = JSON.stringify(a); Email.ajaxPost("https://smtpjs.com/v3/smtpjs.aspx?", t, function (e) { n(e) }) }) }, ajaxPost: function (e, n, t) { var a = Email.createCORSRequest("POST", e); a.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), a.onload = function () { var e = a.responseText; null != t && t(e) }, a.send(n) }, ajax: function (e, n) { var t = Email.createCORSRequest("GET", e); t.onload = function () { var e = t.responseText; null != n && n(e) }, t.send() }, createCORSRequest: function (e, n) { var t = new XMLHttpRequest; return "withCredentials" in t ? t.open(e, n, !0) : "undefined" != typeof XDomainRequest ? (t = new XDomainRequest).open(e, n) : t = null, t } };
 
-let userId;
-let userInfo;
-export default {
+let data;
 
-  data() {
+export default {
+    data() {
     return {
       logo,
-      user,
-      msg: [],
-      token: userInfo,
-      password: '',
-      cPassword: '',
-    }
-  },
-  mounted() {
-  console.log('App mounted!');
-    if (localStorage.getItem('trimhomeUser'));
-    userInfo = JSON.parse(localStorage.getItem('trimhomesUser'));
-    console.log(userInfo);
-  },
-  watch: {
-    password(value){
-      this.password = value;
-      this.validatePassword(value);
-    },
-    cPassword(value){
-      this.cPassword = value;
-      this.confirmPassword(value);
+      image: null,
+      name: null,
+      email: null,
+      isBottom: true,
+      properties: [],
+      uid: null,
+      bankName: null
     }
   },
   methods: {
-    validatePassword(value){
-      let difference = 8 - value.length;
-      if (value.length < 8) {
-        this.msg['password'] = 'Must be 8 characters! '+ difference + ' characters left' ;
-      } else {
-         this.msg['password'] = 'Good Enough';
-      }
+     loadMore(done) {
+       setTimeout(() => {
+       this.$f7router.navigate('/home1/');
+       done();
+       }, 1000);
     },
-    confirmPassword(value){
-      if (value !== this.password) {
-        this.msg['cPassword'] = 'Password Does not match';
-      } else {
-         this.msg['cPassword'] = 'Password Match';
-      }
+
+    convertCurrency(value) {
+        return new Intl.NumberFormat('en-EN', { style: 'currency', currency: 'GBP' }).format(value);
     },
-    async submitted() {
-      this.$f7.preloader.show();
-      if(this.cPassword === this.password) {
+
+    logout() {
+      firebase.auth().signOut().then(function() {
+        this.$f7router.navigate('/login/');
+      }).catch(function(error) {
+        this.$f7.dialog.alert(error.message, "Error");
+      });
+    },
+
+    settings() {
+        this.$f7router.navigate('/settings/');
+    },
+
+    contact() {
+        this.$f7router.navigate('/contact/');
+    },
+
+    async getAccount() {
         try {
-          firebase.auth().createUserWithEmailAndPassword(userInfo.email, this.password).then(users => {
-          let user = firebase.auth().currentUser;
-          user.updatePassword(this.password).then(function() {
-             Email.send({
-              secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
-              Host : "smtp.elasticemail.com",
-              Username : "essiensaviour.a@gmail.com",
-              Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
-              To : userInfo.email,
-              From : "essiensaviour.a@gmail.com",
-              Subject : "Verify Your Email - TrimHomes",
-              Body : `
-              <p>Welcome to TrimHomes</p>
-              <p>Thank for creating an account with us, you can now enjoy all the benefits we offer.</p>
-              `
-            }).then(
-                message => console.log(message)
-            )
-            .then(()=> {
-                this.$f7.preloader.hide();
-                this.$f7router.navigate('/home1/');
+          firebase.firestore().collection("users").where(firebase.firestore.FieldPath.documentId(), "==", this.uid).get().then((snapshot) => {
+            let results = snapshot.docs.map(doc => {
+              this.userId = doc.id;
+              this.user = doc.data();
             })
-            }).catch(function(error) {
-            // An error happened.
-            });
-        })
-          //   if (results.length > 0) {
-          //     firebase.firestore().collection("users").doc(userId).update({
-          //     password: this.password,
-          //     }).then(() => {
-          //       console.log("Updated");
-          //     }).then(() => {
-          //     console.log("It worker");
-          //     this.$f7.preloader.hide();
-          //     this.$f7router.navigate('/home1/');
-          //   });
-              
-          //   }else {
-          //     this.$f7.preloader.hide();
-          //     this.$f7.dialog.alert("The Email you are setting password for does not Exists", "Error");
-          //   }
-          // })
+
+            this.bankName = this.user.bankName;
+            this.AccName = this.user.bankAccountName;
+            this.AccNumber = this.user.bankNumber;
+            this.sortCode = this.user.bankSortCode;
+            
+          })
           
       } catch (err) {
-        this.$f7.preloader.hide();
         console.log(err);
       }
       return true;
-      }else {
-        this.$f7.preloader.hide();
-        this.$f7.dialog.alert("You must set a password", "Error");
-      }
       
-    }
+    },
+
+    async submitted() {
+      try {
+          firebase.firestore().collection("users").get().then((snapshot) =>{
+            snapshot.docs.map(doc => {
+              console.log(doc);
+              console.log(doc.data());
+            });
+          })
+          
+      } catch (err) {
+        console.log(err);
+      }
+  }
   },
-  components: {},
-};
+
+  mounted(){
+    firebase.auth().onAuthStateChanged(users => {
+    if(users) {
+        const user = firebase.auth().currentUser;
+      let name, email, photoUrl, uid, emailVerified;
+
+     if (user != null) {
+      this.name = user.displayName;
+      this.email = user.email;
+      this.image = user.photoURL;
+      // emailVerified = user.emailVerified;
+      this.uid = user.uid;
+    }else {
+      this.$f7router.navigate('/login/');
+    }
+    }else {
+        this.$f7router.navigate('/login/');
+        console.log("User logged out");
+    }
+    this.getAccount();
+});
+
+
+  }
+}
 </script>
 
 <style scoped>
@@ -260,13 +257,14 @@ export default {
     background: #2B3D4C;
     display: flex;
     margin-bottom: 2.5rem;
-    padding: 1.5rem 0;
+    padding: 0.5rem 0 0rem 0;
     justify-content: center;
   }
 
   .user-image img {
-    height: auto;
-    width: 65px;
+    border-radius: 50%;
+    height: 90px;
+    width: 90px;
   }
 
   .setting-menu li {

@@ -8,9 +8,12 @@
     </f7-navbar>
     
     <f7-page-content class="register">
-    <form @submit.prevent="submitted" no-store-data="true" class="list form-store-data" id="demo-form">
+      <div class="user-image">
+        <img :src="image" alt="" class="user-image">
+      </div>
+    <form @submit.prevent="updateProfile" no-store-data="true" class="list form-store-data" id="demo-form">
       <ul>
-      <li class="item-content item-input image">
+      <!--<li class="item-content item-input image">
           <div class="item-inner">
             <div class="item-input-wrap">
             
@@ -19,25 +22,25 @@
               </label>
               
               <div class="dp">
-                <input name="image" id="image" class="upload" accept="image/*" type="file" @change="previewImage" required validate data-error-message="Please upload your image!">
+                <input name="image" id="image" class="upload" accept="image/*" type="file" @change="previewImage">
                 <p class="upload-text">{{uploadValue.toFixed() + "%"}}
                 <progress id="progress" :value="uploadValue" max="100" ></progress>  </p>
               </div>
             </div>
           </div>
-      </li>
+      </li>-->
       <li class="item-content item-input">
           <div class="item-inner">
             <div class="item-title item-label">Phone Number</div>
             <div class="item-input-wrap">
-              <input name="phone" type="tel" v-model="phone">
+              <input name="phone" type="tel" v-model="phone" validate pattern="[0-9]*" data-error-message="Only numbers please!">
               <span class="input-clear-button"></span>
             </div>
           </div>
         </li>
         <li class="item-content item-input">
           <div class="item-inner">
-            <div class="item-title item-label">Memorable Number</div>
+            <div class="item-title item-label">Memorable Number</div> 
             <div class="item-input-wrap">
               <input name="mom" type="number" v-model="memorableNumber" validate pattern="[0-9]*" data-error-message="Only numbers please!">
               <span class="input-clear-button"></span>
@@ -91,37 +94,54 @@
 </template>
 <script>
 import logo from '../../images/logo-nav.png';
-import user from '../../images/user.png';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/storage'
-import OTP from 'otp-client';
 
-
-const secret = 'TPQDAHVBZ5NBO5LFEQKC7V7UPATSSMFY'
-const otp = new OTP(secret);
-const token = otp.getToken();
-
-const Email = { send: function (a) { return new Promise(function (n, e) { a.nocache = Math.floor(1e6 * Math.random() + 1), a.Action = "Send"; var t = JSON.stringify(a); Email.ajaxPost("https://smtpjs.com/v3/smtpjs.aspx?", t, function (e) { n(e) }) }) }, ajaxPost: function (e, n, t) { var a = Email.createCORSRequest("POST", e); a.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), a.onload = function () { var e = a.responseText; null != t && t(e) }, a.send(n) }, ajax: function (e, n) { var t = Email.createCORSRequest("GET", e); t.onload = function () { var e = t.responseText; null != n && n(e) }, t.send() }, createCORSRequest: function (e, n) { var t = new XMLHttpRequest; return "withCredentials" in t ? t.open(e, n, !0) : "undefined" != typeof XDomainRequest ? (t = new XDomainRequest).open(e, n) : t = null, t } };
 
 let pics;
 export default {
-  name: "Upload",
   data() {
     return {
       errors: [],
       logo,
-      user,
       imageData: null,
       picture: null,
       uploadValue: 0,
-      phone: '',
-      address: '',
+      phone: "",
+      address: "",
       memorableNumber: "",
       city: "",
+      country: "",
       zip: "",
+      id: null,
+      userId: null,
+      user: null,
+      image: null,
     }
   },
+  mounted(){
+    firebase.auth().onAuthStateChanged(users => {
+    if(users) {
+        const user = firebase.auth().currentUser;
+      let displayName, email, photoUrl, uid, emailVerified;
+
+     if (user != null) {
+      this.image = user.photoURL;
+      this.id = user.uid;
+      this.getProfile();
+    }else {
+      this.$f7router.navigate('/login/');
+    }
+    }else {
+        this.$f7router.navigate('/login/');
+        console.log("User logged out");
+    }
+});    
+
+},
+
+
   methods: {
 
     previewImage(event) {
@@ -130,53 +150,44 @@ export default {
       this.imageData = event.target.files[0];
     },
 
-    async submitted() {
+    async getProfile() {
+        try {
+          firebase.firestore().collection("users").where(firebase.firestore.FieldPath.documentId(), "==", this.id).get().then((snapshot) => {
+            let results = snapshot.docs.map(doc => {
+              this.userId = doc.id;
+              this.user = doc.data();
+            })
+
+            this.phone = this.user.phone;
+            this.address = this.user.address
+            this.memorableNumber = this.user.memorableNumber;
+            this.city = this.user.city;
+            this.country = this.user.country;
+            this.zip = this.user.postalCode;
+            
+          })
+          
+      } catch (err) {
+        console.log(err);
+      }
+      return true;
+      
+    },
+
+    async updateProfile() {
       this.$f7.preloader.show();
       try {
-
-            const storageRef = firebase.storage().ref(`${this.imageData.name}`).put(this.imageData);
-            storageRef.on(`state_changed`,snapshot => {
-            this.uploadValue = (snapshot.bytesTransferred / snapshot.totalBytes)*100;
-          }, error => {console.log(error.message)},
-          () => {this.uploadValue = 100;
-            storageRef.snapshot.ref.getDownloadURL().then((url) => {
-              this.picture = url;
-              pics = url;
-            }).then(() => {
-            Email.send({
-              secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
-              Host : "smtp.elasticemail.com",
-              Username : "essiensaviour.a@gmail.com",
-              Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
-              To : this.email,
-              From : "essiensaviour.a@gmail.com",
-              Subject : "Verify Your Email - TrimHomes",
-              Body : `
-              <p>Thank you for registering with TrimHomes</p>
-              <p>Here is your token <strong>${token}</strong> to verify your email. </p>
-              `
-          }).then(
-            message => console.log(message)
-          );
-          }).then(() => {
-            const userInfo = {
-              email: this.email,
-              city: this.city,
-              country: this.country,
-              fullName: this.fullName,
-              image: pics,
+              return firebase.firestore().collection("users").doc(this.id).update({
               memorableNumber: this.memorableNumber,
               phone: this.phone,
-              postalCode: this.postalCode,
-              verified: false,
-              created: new Date(),
-              token
-            }
-            localStorage.setItem('trimhomesUser', JSON.stringify(userInfo));
+              verified: true,
+              address: this.address,
+              city: this.city,
+              country: this.country,
+              postalCode: this.zip,
           }).then(() => {
           this.$f7.preloader.hide();
-          this.$f7router.navigate('/verify-token/');
-        });
+          this.$f7.dialog.alert(`Your profile has been updated`, "Success");
         });
             
           
@@ -260,6 +271,21 @@ export default {
     height: 80px;
     object-fit: cover;
     width: 80px;
+  }
+
+  .user-image {
+    align-items: center;
+    background: #2B3D4C;
+    display: flex;
+    margin-bottom: 2.5rem;
+    padding: 0.5rem 0 0rem 0;
+    justify-content: center;
+  }
+
+  .user-image img {
+    border-radius: 50%;
+    height: 90px;
+    width: 90px;
   }
 
   .upload-text {

@@ -5,15 +5,11 @@
                 :key="property.id"
                 class="listing-item"
                 :link="`/portfolioSingle/${property.id}`"
-                :title="property.data().Title"
-                :subtitle="property.data().SalePrice"
-                :text="property.data().ShortSummary"
+                :title="`${property.data().Title + ', ' + property.data().Location}`"
+                :subtitle="`${convertCurrency(property.data().Outright) + ' - Outright'}`"
                 icon-ios="f7:briefcase" icon-aurora="f7:briefcase" icon-md="material:work"
-                badge="Review"
-                badge-color="yellow"
-                no-chevron
             >
-                <img slot="media" :src="home" height="80" width="80" />
+                <img slot="media" :src="property.data().image" height="80" width="80" />
                 <f7-icon slot="media" icon="demo-list-icon"></f7-icon>
         </f7-list-item>
     </f7-list>
@@ -43,6 +39,12 @@ export default {
               console.log(this.properties);
             });
         });
+    },
+
+    methods: {
+      convertCurrency(value) {
+            return new Intl.NumberFormat('en-EN', { style: 'currency', currency: 'GBP' }).format(value);
+        },
     }
 
 }

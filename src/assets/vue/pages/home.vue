@@ -31,6 +31,9 @@
       <f7-list-item link="/projectSingle/" title="Project Single" panel-close>
         <f7-icon slot="media" ios="f7:info" md="material:info"></f7-icon>
       </f7-list-item>
+      <f7-list-item link="/outright-payment/" title="Outright Payment" panel-close>
+        <f7-icon slot="media" ios="f7:info" md="material:info"></f7-icon>
+      </f7-list-item>
       <f7-list-item link="/payment-detail/" title="Payment Detail" panel-close>
         <f7-icon slot="media" ios="f7:info" md="material:info"></f7-icon>
       </f7-list-item>
@@ -47,6 +50,9 @@
         <f7-icon slot="media" icon="fas fa-id-card-alt fa-fw"></f7-icon>
       </f7-list-item>
       <f7-list-item link="/login/" title="Login" panel-close>
+        <f7-icon slot="media" icon="fas fa-id-card-alt fa-fw"></f7-icon>
+      </f7-list-item>
+      <f7-list-item link="/contact/" title="Contact" panel-close>
         <f7-icon slot="media" icon="fas fa-id-card-alt fa-fw"></f7-icon>
       </f7-list-item>
       <f7-list-item link="/settings/" title="Settings" panel-close>

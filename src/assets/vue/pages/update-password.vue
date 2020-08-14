@@ -1,7 +1,7 @@
 <template>
   <f7-page>
   <f7-navbar class="home--nav">
-    <f7-navbar back-link="Set Password" no-shadow no-hairline back-link-show-text></f7-navbar>
+    <f7-navbar back-link="Back" no-shadow no-hairline back-link-show-text></f7-navbar>
       <f7-nav-right>
         <img :src="logo" class="logo">
       </f7-nav-right>
@@ -9,22 +9,14 @@
     <!--<f7-navbar back-link="Back"></f7-navbar>-->
     <f7-page-content class="confirm">
     <div class="block block-strong">
-      <f7-block-title class="confirm--title">You’ve got mail....</f7-block-title>
-      <p class="text">Please check your mailbox for an email from Trim Homes UK and enter the confirmation  code you received below:</p>
+      <f7-block-title class="confirm--title">Hello {{name}}</f7-block-title>
+      <p class="text">You can now set a new password for your account.</p>
     </div>
-    <form @submit.prevent="submitted" no-store-data="true" class="list form-store-data" id="password-form">
+    <form @submit.prevent="updatePassword" no-store-data="true" class="list form-store-data" id="password-form">
       <ul>
-        <li class="item-content item-input disabled">
-          <div class="item-inner">
-            <div class="item-input-wrap">
-              <input name="token" v-model="token" type="text">              
-            </div>
-          </div>
-        </li>
-        <span class="valid">Awesome! Your email address has been verified.</span>
         <li class="item-content item-input">
           <div class="item-inner">
-            <div class="item-title item-label">Create a strong password:</div>
+            <div class="item-title item-label">New password:</div>
             <div class="item-input-wrap">
               <input name="password" v-model="password" type="password" required validate>
               <span v-if="msg.password">{{msg.password}}</span>
@@ -43,7 +35,7 @@
           </div>
         </li>
         <li>
-          <f7-button class="verify--btn" type="submit" >Go To Dashboard</f7-button>
+          <f7-button class="verify--btn" type="submit" >Update Password</f7-button>
         </li>
         
       </ul>
@@ -70,12 +62,36 @@ export default {
       token: userInfo,
       password: '',
       cPassword: '',
+      name: null,
+      user: null,
     }
   },
   mounted() {
+    firebase.auth().onAuthStateChanged(users => {
+        if(users) {
+            this.user = firebase.auth().currentUser;
+          let name, email, photoUrl, uid, emailVerified;
+
+        if (this.user != null) {
+          this.name = this.user.displayName;
+          // email = user.email;
+          // photoUrl = user.photoURL;
+          // emailVerified = user.emailVerified;
+          // uid = user.uid;
+        }else {
+          this.$f7router.navigate('/login/');
+        }
+        }else {
+            this.$f7router.navigate('/login/');
+            console.log("User logged out");
+        }
+    });
+
   console.log('App mounted!');
     if (localStorage.getItem('trimhomeUser'));
     userInfo = JSON.parse(localStorage.getItem('trimhomesUser'));
+    this.token = userInfo.token;
+    this.name = userInfo.firstName;
     console.log(userInfo);
   },
   watch: {
@@ -92,7 +108,7 @@ export default {
     validatePassword(value){
       let difference = 8 - value.length;
       if (value.length < 8) {
-        this.msg['password'] = 'Must be 8 characters! '+ difference + ' characters left' ;
+        this.msg['password'] = 'Must be 8 characters!';
       } else {
          this.msg['password'] = 'Good Enough';
       }
@@ -104,52 +120,20 @@ export default {
          this.msg['cPassword'] = 'Password Match';
       }
     },
-    async submitted() {
+    async updatePassword() {
       this.$f7.preloader.show();
       if(this.cPassword === this.password) {
         try {
-          firebase.auth().createUserWithEmailAndPassword(userInfo.email, this.password).then(users => {
-          let user = firebase.auth().currentUser;
-          user.updatePassword(this.password).then(function() {
-             Email.send({
-              secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
-              Host : "smtp.elasticemail.com",
-              Username : "essiensaviour.a@gmail.com",
-              Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
-              To : userInfo.email,
-              From : "essiensaviour.a@gmail.com",
-              Subject : "Verify Your Email - TrimHomes",
-              Body : `
-              <p>Welcome to TrimHomes</p>
-              <p>Thank for creating an account with us, you can now enjoy all the benefits we offer.</p>
-              `
-            }).then(
-                message => console.log(message)
-            )
-            .then(()=> {
-                this.$f7.preloader.hide();
-                this.$f7router.navigate('/home1/');
-            })
-            }).catch(function(error) {
+
+          this.user.updatePassword(this.password).then(function() {
+            // Update successful.
+            this.$f7.preloader.hide();
+            this.$f7.dialog.alert("Your password has been updated", "Success");
+          }).catch(function(error) {
             // An error happened.
-            });
-        })
-          //   if (results.length > 0) {
-          //     firebase.firestore().collection("users").doc(userId).update({
-          //     password: this.password,
-          //     }).then(() => {
-          //       console.log("Updated");
-          //     }).then(() => {
-          //     console.log("It worker");
-          //     this.$f7.preloader.hide();
-          //     this.$f7router.navigate('/home1/');
-          //   });
-              
-          //   }else {
-          //     this.$f7.preloader.hide();
-          //     this.$f7.dialog.alert("The Email you are setting password for does not Exists", "Error");
-          //   }
-          // })
+            this.$f7.preloader.hide();
+            this.$f7.dialog.alert("Hello", "Error");
+          });
           
       } catch (err) {
         this.$f7.preloader.hide();
@@ -209,7 +193,7 @@ export default {
     font-size: 0.9rem;
     font-weight: 350;
     margin-bottom: 1.5rem !important;
-    padding-right: 35px;
+    text-align: center;
   }
 
   .valid {

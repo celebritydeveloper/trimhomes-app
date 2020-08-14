@@ -19,11 +19,10 @@
     <f7-panel class="panel" right resizable theme-dark>
     <f7-view>
       <f7-page>
-        <f7-link class="panel-close" panel-close><f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon></f7-link>
+        <f7-link class="panel-close" panel-close @click="homepage"><f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon></f7-link>
         
-        <f7-link class="panel-link" href="/">My Profile</f7-link>
-        <f7-link class="panel-link" href="/">My Earnings</f7-link>
-        <f7-link class="panel-link" href="/">Settings</f7-link>
+        <f7-link class="panel-link" panel-close @click="settings">Settings</f7-link>
+        <f7-link class="panel-link"  panel-close @click="contact" >Contact Us</f7-link>
         <f7-link class="panel-link" panel-close  @click="logout">Logout</f7-link>
       </f7-page>
     </f7-view>
@@ -37,16 +36,23 @@
             Welcome, {{name}}
           </div>
             <f7-card class="info-card">
+              <f7-icon class="info-icon" ios="f7:building_2_fill" aurora="f7:building_2_fill" md="material:location_city"></f7-icon>
+              <p class="info-title">Buy a property</p>
+              <p class="info-text">Buy a buy-to-let investment property <br> Buy your first or next residential property <br> Buy a joint-venture property</p>
+              <f7-button class="info-btn" tab-link="#tab-2">Start Here</f7-button>
+            </f7-card>
+            <f7-card class="info-card">
               <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:credit_card"></f7-icon>
-              <p class="info-title">Part-purchase a property</p>
-              <p class="info-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore e</p>
-              <f7-button class="info-btn">Learn How</f7-button>
+              <p class="info-title">Rent-purchase</p>
+              <p class="info-text">Part-purchase any Trim Homes property and get a share of the rental income. 
+                    You can purchase with any amount from as low as £500.</p>
+              <f7-button class="info-btn" tab-link="#tab-2">Get Started</f7-button>
             </f7-card>
             <f7-card class="info-card">
               <f7-icon class="info-icon" ios="f7:person_circle" aurora="f7:person_circle" md="material:account_circle"></f7-icon>
               <p class="info-title">Update your details</p>
-              <p class="info-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore e</p>
-              <f7-button class="info-btn">Update Now</f7-button>
+              <p class="info-text">Review and update your personal and contact information here.</p>
+              <f7-button class="info-btn" href="/update-profile/">Update Now</f7-button>
             </f7-card>
       </f7-tab>
       <f7-tab id="tab-2" class="page-conten" name="Properties">
@@ -55,9 +61,9 @@
       <f7-tab id="tab-3" class="page-conten" name="My Portfolio">
         <div class="card card-outline user-card">
           <div class="card-header user-detail">
-            <img :src="user" alt="" class="user-image">
-            <p class="user-name">Saviour Essien</p>
-            <p class="user-location"><f7-icon ios="f7:placemark" aurora="f7:placemark" md="material:location_on"></f7-icon> London, England</p>
+            <img :src="image" alt="" class="user-image">
+            <p class="user-name">{{name}}</p>
+            <p class="user-location"><f7-icon ios="f7:placemark" aurora="f7:placemark" md="material:location_on"></f7-icon> {{city}}, {{country}}</p>
           </div>
           <div class="card-content invest-list">
             <div class="invest-item">
@@ -106,6 +112,13 @@ export default {
       name: null,
       isBottom: true,
       properties: [],
+      name:  null,
+      image: null,
+      id: null,
+      city: null,
+      country: null,
+      portfolioId: null,
+      singlePortfolio: null
     }
   },
   methods: {
@@ -128,21 +141,58 @@ export default {
       });
     },
 
-    async submitted() {
-      try {
-        // const user = firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(users => {
-        //   return 
-          firebase.firestore().collection("users").get().then((snapshot) =>{
-            snapshot.docs.map(doc => {
-              console.log(doc);
-              console.log(doc.data());
-            });
+    homepage() {
+        this.$f7router.navigate('/home1/');
+    },
+
+    settings() {
+        this.$f7router.navigate('/settings/');
+    },
+
+    contact() {
+        this.$f7router.navigate('/contact/');
+    },
+    async getProfile() {
+        try {
+          firebase.firestore().collection("users").where(firebase.firestore.FieldPath.documentId(), "==", this.id).get().then((snapshot) => {
+            let results = snapshot.docs.map(doc => {
+              this.userId = doc.id;
+              this.user = doc.data();
+            })
+
+            this.phone = this.user.phone;
+            this.address = this.user.address
+            this.memorableNumber = this.user.memorableNumber;
+            this.city = this.user.city;
+            this.country = this.user.country;
+            this.zip = this.user.postalCode;
+            
           })
           
       } catch (err) {
         console.log(err);
       }
-  }
+      return true;
+      
+    },
+
+    async getProperty() {
+        try {
+          const portfolio = firebase.firestore().collection("portfolio").where('userId', "==", this.id).get().then((snapshot) => {
+            let results = snapshot.docs.map(doc => {
+              this.portfolioId = doc.id;
+              this.singlePortfolio = doc.data();
+            });
+            console.log(this.singlePortfolio);
+            });
+          
+      } catch (err) {
+        console.log(err);
+      }
+      return true;
+      
+    },
+
   },
   components: {
     Project,
@@ -158,9 +208,9 @@ export default {
      if (user != null) {
       this.name = user.displayName;
       // email = user.email;
-      // photoUrl = user.photoURL;
+      this.image = user.photoURL;
       // emailVerified = user.emailVerified;
-      // uid = user.uid;
+      this.id = user.uid;
     }else {
       this.$f7router.navigate('/login/');
     }
@@ -168,6 +218,9 @@ export default {
         this.$f7router.navigate('/login/');
         console.log("User logged out");
     }
+
+    this.getProfile();
+    this.getProperty();
 });
 
     
@@ -220,12 +273,15 @@ export default {
       justify-content: flex-start;
     }
 
-    .user-image {
-      height: auto;
-      width: 80px;
-    }
 
-    .user-name {
+
+  .user-image {
+    border-radius: 50%;
+    height: 120px;
+    width: 120px;
+  }
+
+  .user-name {
       color: #2B3D4C;
       font-size: 1.2rem;
       font-weight: bold;

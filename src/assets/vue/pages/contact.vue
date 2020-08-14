@@ -1,59 +1,32 @@
 <template>
   <f7-page>
   <f7-navbar class="home--nav">
-    <f7-navbar back-link="Create Account" back-link-show-text></f7-navbar>
+    <f7-navbar back-link="Back" back-link-show-text></f7-navbar>
       <f7-nav-right>
         <img :src="logo" class="logo">
       </f7-nav-right>
     </f7-navbar>
     
     <f7-page-content class="register">
-    <div class="block block-strong">
-      <!--<div   class="dp">
-        <img :src="user" class="user">
-        <p>{{uploadValue.toFixed() + "%"}}
-      <progress id="progress" :value="uploadValue" max="100" ></progress>  </p>
-      </div>-->
-      
-
-
-      <div>
-      
-    </div>
-      
-    </div>
-    <form @submit.prevent="submitted" no-store-data="true" class="list form-store-data" id="demo-form">
-      <ul>
-      <li class="item-content item-input image">
-          <div class="item-inner">
-            <div class="item-input-wrap">
-            
-              <label for="image">
-                <img :src="user" class="user">
-              </label>
-              
-              <div class="dp">
-                <input name="image" id="image" class="upload" accept="image/*" type="file" @change="previewImage" required validate data-error-message="Please upload your image!">
-                <p>{{uploadValue.toFixed() + "%"}}
-                <progress id="progress" :value="uploadValue" max="100" ></progress>  </p>
-              </div>
+        <f7-block class="block block-strong">
+            <div class="contact-block">
+                <f7-icon ios="f7:envelope" aurora="f7:envelope" md="material:email"></f7-icon>
+                <p>info@trimhomes.com</p>
             </div>
-          </div>
-      </li>
+            <div class="contact-block">
+                <f7-icon ios="f7:envelope" aurora="f7:envelope" md="material:phone"></f7-icon>
+                <p>+442304021477</p>
+            </div>
+            <f7-block-title class="title">Or write us</f7-block-title>
+        </f7-block>
+
+    <form @submit.prevent="submitContact" no-store-data="true" class="list form-store-data" id="demo-form">
+      <ul>
       <li class="item-content item-input">
           <div class="item-inner">
-            <div class="item-title item-label">First Name</div>
+            <div class="item-title item-label">Full Name</div>
             <div class="item-input-wrap">
-              <input name="firstName" type="text" v-model="firstName" required validate data-error-message="Your Name is Required!">
-              <span class="input-clear-button"></span>
-            </div>
-          </div>
-        </li>
-        <li class="item-content item-input">
-          <div class="item-inner">
-            <div class="item-title item-label">Surname</div>
-            <div class="item-input-wrap">
-              <input name="lastName" type="text" v-model="lastName" required validate data-error-message="Your Name is Required!">
+              <input name="fullName" type="text" v-model="fullName" required validate data-error-message="Your Name is Required!">
               <span class="input-clear-button"></span>
             </div>
           </div>
@@ -78,44 +51,18 @@
         </li>
         <li class="item-content item-input">
           <div class="item-inner">
-            <div class="item-title item-label">Memorable Number</div>
+            <div class="item-title item-label">Message (Optional)</div>
             <div class="item-input-wrap">
-              <input name="password" type="text" v-model="memorableNumber" required validate pattern="[0-9]*" data-error-message="Only numbers please!">
-              <span class="input-clear-button"></span>
-            </div>
-          </div>
-        </li>
-        <li class="item-content item-input">
-          <div class="item-inner">
-            <div class="item-title item-label">Address:</div>
-            <div class="item-input-wrap">
-              <input name="address" type="text" v-model="address" required validate>
-              <span class="input-clear-button"></span>
-            </div>
-          </div>
-        </li>
-        <li class="item-content item-input">
-          <div class="item-inner">
-            <div class="item-title item-label">How Did You Hear About Us?:</div>
-            <div class="item-input-wrap input-dropdown-wrap">
-              <select v-model="referrer ">
-                <option disabled selected>Please Select an Option</option>
-                <option value="Male">Family</option>
-                <option value="Female">Friend</option>
-                <option value="Private Institution">Private Institution</option>
-                <option value="Advert">Advert</option>
-                <option value="Social Media">Social Media</option>
-                <option value="Member of Staff">Member of Staff</option>
-              </select>
+              <textarea v-model="message"></textarea>
             </div>
           </div>
         </li>
         <li>
-          <p class="terms">By clicking ‘Create Account’, you agree to our  
-          <f7-link class="forgot-btn" href="/forgot-password/">Terms &amp; Conditions</f7-link> 
-          and our  
-          <f7-link class="forgot-btn" href="/forgot-password/"> Privacy Policy.</f7-link></p>
-          <f7-button class="register--btn" type="submit">Create Account</f7-button>
+          <p class="terms">By clicking “Contact Us”  you consent to being contacted by TRIM HOMES for the purpose 
+                of property acquisition services. Please refer to our <f7-link class="forgot-btn" href="/forgot-password/"> Privacy Policy.</f7-link> for more details of
+                how we use your contact information.  
+          </p>
+          <f7-button class="register--btn" type="submit">Contact Us</f7-button>
         </li>
         
       </ul>
@@ -146,16 +93,10 @@ export default {
       errors: [],
       logo,
       user,
-      imageData: null,
-      picture: null,
-      uploadValue: 0,
-      firstName: '',
-      lastName: '',
+      fullName: '',
       email: "",
       phone: "",
-      memorableNumber: "",
-      address: "",
-      referrer: '',
+      message: ""
     }
   },
   methods: {
@@ -166,41 +107,25 @@ export default {
       this.imageData = event.target.files[0];
     },
 
-    async submitted() {
+    async submitContact() {
       this.$f7.preloader.show();
       try {
-
-            const storageRef = firebase.storage().ref(`${this.imageData.name}`).put(this.imageData);
-            storageRef.on(`state_changed`,snapshot => {
-            this.uploadValue = (snapshot.bytesTransferred / snapshot.totalBytes)*100;
-          }, error => {console.log(error.message)},
-          () => {this.uploadValue = 100;
-            storageRef.snapshot.ref.getDownloadURL().then((url) => {
-              this.picture = url;
-              pics = url;
-            }).then(() => {
             Email.send({
               secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
               Host : "smtp.elasticemail.com",
               Username : "essiensaviour.a@gmail.com",
               Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
-              To : this.email,
-              From : "essiensaviour.a@gmail.com",
-              Subject : "Verify Your Email - TrimHomes UK",
+              To : 'essiensaviour.a@gmail.com',
+              From : 'essiensaviour.a@gmail.com',
+              Subject : "TrimHomes App Contact",
               Body : `
               <!doctype html>
                 <html>
                   <head>
                     <meta name="viewport" content="width=device-width">
                     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-                    <title>TrimHomes Verify Token Email</title>
+                    <title>TrimHomes App Contact</title>
                     <style>
-                    /* -------------------------------------
-                        INLINED WITH htmlemail.io/inline
-                    ------------------------------------- */
-                    /* -------------------------------------
-                        RESPONSIVE AND MOBILE FRIENDLY STYLES
-                    ------------------------------------- */
                     @media only screen and (max-width: 620px) {
                       table[class=body] h1 {
                         font-size: 28px !important;
@@ -300,25 +225,18 @@ export default {
                                   <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
                                     <tr>
                                       <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
-                                      <p style="background: #2B3D4C; padding: 0.2rem 0; text-align: center;"><img src="https://lirp-cdn.multiscreensite.com/7e157610/dms3rep/multi/opt/3-68f7e3f4-218w.png" style="width: 120px;"></p>
-                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Hello <strong>${this.firstName}</strong>,</p>
-                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Thank you for registering with TrimHome UK</p>
-                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Use the following code to verify your email address</p>
-                                        <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; box-sizing: border-box;">
-                                          <tbody>
-                                            <tr>
-                                              <td align="left" style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding-bottom: 15px;">
-                                                <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: auto;">
-                                                  <tbody>
-                                                    <tr>
-                                                      <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; background-color: #3498db; border-radius: 5px; text-align: center;"> <span style="display: inline-block; color: #ffffff; background-color: #2B3D4C; border: solid 1px #2B3D4C; border-radius: 5px; box-sizing: border-box; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-transform: capitalize; border-color: #3498db;">${token}</span> </td>
-                                                    </tr>
-                                                  </tbody>
-                                                </table>
-                                              </td>
-                                            </tr>
-                                          </tbody>
-                                        </table>
+                                        <p style="background: #2B3D4C; padding: 0.5rem 0; text-align: center;"><img src="https://lirp-cdn.multiscreensite.com/7e157610/dms3rep/multi/opt/3-68f7e3f4-218w.png" style="width: 120px;"></p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Hello Timi,</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">You have recieve a contact message from the <strong>${this.fullName}</strong> </p>
+                                        
+                                        <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 8px;">Phone Number:</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.phone}</p>
+
+                                        <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 8px;">Email Address:</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.email}</p>
+
+                                        <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 8px;">Message: </p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.message}</p>
                                       </td>
                                     </tr>
                                   </table>
@@ -350,30 +268,14 @@ export default {
                 </html>
               `
           }).then(
-            message => console.log(message + "Sent")
-          );
-          }).then(() => {
-            const userInfo = {
-              firstName: this.firstName,
-              lastName: this.lastName,
-              email: this.email,
-              image: pics,
-              memorableNumber: this.memorableNumber,
-              phone: this.phone,
-              address: this.address,
-              bankName: '',
-              bankNumber: '',
-              bankAccountName: '',
-              bankSortCode: '',
-              verified: false,
-              created: new Date(),
-              token
-            }
-            localStorage.setItem('trimhomesUser', JSON.stringify(userInfo));
-          }).then(() => {
+            message => console.log(message)
+          ).then(() => {
           this.$f7.preloader.hide();
-          this.$f7router.navigate('/verify-token/');
-        });
+          this.email = '';
+          this.phone = '';
+          this.fullName = '';
+          this.message = '';
+          this.$f7.dialog.alert(`Your message has been sent to Admin`, "Success");
         });
             
           
@@ -440,55 +342,26 @@ export default {
     width: 0px;
   }
 
-  .image {
-    text-align: center;
+  .contact-block {
+      text-align: center;
+      margin-bottom: 1.3rem;
   }
 
-
-  .dp {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  .contact-block p {
+     font-size: 1.5rem;
+     margin: 0;
+     padding: 0;
   }
-
-  .user {
-    border-radius: 50%;
-    height: 100px;
-    object-fit: cover;
-    width: 100px;
-  }
-
-  .upload::-webkit-file-upload-button {
-    color: transparent;
-    display: none;
-  }
-
-  /* The overlay effect (full height and width) - lays on top of the container and over the image */
-.overlay {
-  border-radius: 50%;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 100px;
-  width: 100px;
-  opacity: 1;
-  transition: .3s ease;
-  background-color: rgba(0, 0, 0, 0.5);
-}
 
 .icon {
-  color: white;
-  font-size: 1.2rem;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  text-align: center;
+  color: #2B3D4C;
+  font-size: 2rem;
+  margin-bottom: 1rem;
 }
+
+    .title {
+        font-size: 1.3rem;
+    }
   
 
   /* .upload::before {
@@ -546,7 +419,7 @@ export default {
     color: #2B3D4C;
     font-size: 0.6rem;
     font-weight: lighter;
-    padding: 5px 90px 5px 20px;
+    padding: 5px 30px 5px 20px;
   }
 
   .terms .forgot-btn {

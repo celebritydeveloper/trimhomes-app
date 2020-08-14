@@ -41,7 +41,18 @@
 	display: inline;
 	font-size: 0.7rem;
 	margin: 0;
+	padding: 0.2rem 0.6rem;
+}
+
+.media-item .item-link .item-text {
+	background: rgba(7, 153, 144, 0.5);
+	border-radius: 6px;
+	color: #2B3D4C;
+	font-size: 0.7rem;
+	margin: 0;
+	margin-top: 0.2rem;
 	padding: 0.1rem 0.6rem;
+	width: 60%;
 }
 
 input {

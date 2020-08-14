@@ -8,7 +8,7 @@
     </f7-navbar>
     <f7-toolbar tabbar labels :position="isBottom ? 'bottom' : 'top'">
       <f7-link tab-link="#tab-1" tab-link-active text="Home" icon-ios="f7:house_fill" icon-aurora="f7:house_fill" icon-md="material:home"></f7-link>
-      <f7-link tab-link="#tab-2" text="Projects" icon-ios="f7:building_2_fill" icon-aurora="f7:building_2_fill" icon-md="material:apartment"></f7-link>
+      <f7-link tab-link="#tab-2" text="Properties" icon-ios="f7:building_2_fill" icon-aurora="f7:building_2_fill" icon-md="material:local_offer"></f7-link>
       <f7-link tab-link="#tab-3" text="My Portfolio" icon-ios="f7:briefcase" icon-aurora="f7:briefcase" icon-md="material:work"></f7-link>
       <f7-link tab-link="#tab-4" text="Support" icon-ios="f7:question_circle" icon-aurora="f7:question_circle" icon-md="material:help_outline"></f7-link>
       <f7-link tab-link="" raised panel-open="right" cover text="More" icon-ios="f7:bars" icon-aurora="f7:bars" icon-md="material:menu"></f7-link>
@@ -29,107 +29,50 @@
     <f7-page-content class="confirm">
 
         <f7-swiper pagination>
-            <f7-swiper-slide class="slide-img"><img :src="slide"></f7-swiper-slide>
-            <f7-swiper-slide class="slide-img"><img :src="home"></f7-swiper-slide>
-            <f7-swiper-slide class="slide-img"><img :src="slide"></f7-swiper-slide>
+            <f7-swiper-slide class="slide-img"><img :src="currentProperty.image"></f7-swiper-slide>
         </f7-swiper>
 
         <div class="project-top">
             <p class="project-type">
                 {{currentProperty.Title}}
-                <span class="project-location" v-for="(location, index) in currentProperty.Location" :key="index">
-                  {{location}},
+                <!--<span class="project-location" v-for="(location, index) in currentProperty.Location" :key="index">
+                  {{currentProperty.Location}},
+                  </span>-->
+                  <span class="project-location">
+                  {{currentProperty.Location}},
                   </span>
-                <span class="project-price">{{convertCurrency(currentProperty.SalePrice)}}</span>
             </p>
-            <p class="register--btn" @click="$refs.actionsOneGroup.open()">Withdraw</p>
         </div>
 
         <f7-block class="project-icons">
         <f7-row>
-            <f7-col>
+            <f7-col v-for="(icon, index) in currentProperty.Amenities" :key="index">
                 <f7-card class="info-card">
                     <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:credit_card"></f7-icon>
-                    <p class="info-text">3 Baths</p>
-                </f7-card>
-            </f7-col>
-            <f7-col>
-                <f7-card class="info-card">
-                    <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:credit_card"></f7-icon>
-                    <p class="info-text">3 Toilets</p>
-                </f7-card>
-            </f7-col>
-            <f7-col>
-                <f7-card class="info-card">
-                    <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:credit_card"></f7-icon>
-                    <p class="info-text">{{currentProperty.Bedrooms}} Room</p>
-                </f7-card>
-            </f7-col>
-            <f7-col>
-                <f7-card class="info-card">
-                    <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:credit_card"></f7-icon>
-                    <p class="info-text">Garage</p>
+                    <p class="info-text">{{icon}}</p>
                 </f7-card>
             </f7-col>
         </f7-row>
         </f7-block>
 
-        <f7-block class="project-info-block">
-          <div class="project-info">
-                <p class="project-info-title">Type</p>
-                <p class="project-info-text" v-for="(type, index) in currentProperty.Type" :key="index">
-                  <span class="inline">{{type}}, </span>
-                </p>
-            </div>
+         <f7-block class="project-info-block">
              <div class="project-info">
-                <p class="project-info-title">Tenure</p>
-                <p class="project-info-text" v-for="(tenure, index) in currentProperty.Tenure" :key="index">
-                  <span class="inline">{{tenure}}, </span>
-                </p>
+                <p class="project-info-title">Outright Purchase</p>
+                <p class="project-info-text">Buy this entire property from TRIM HOMES for full ownership</p>
+                <div class="price">
+                  <span class="project-price">{{convertCurrency(currentProperty.Outright)}}</span>
+                </div>
             </div>
-            <div class="project-info">
-                <p class="project-info-title">Actual Annual Rental Income</p>
-                <p class="project-info-text">{{convertCurrency(currentProperty.ActualAnnualRentalIncome)}}</p>
-            </div>
-            <div class="project-info">
-                <p class="project-info-title">Capital Gains Tax</p>
-                <p class="project-info-text">{{convertCurrency(currentProperty.CapitalGainsTax)}}</p>
-            </div>
-            <div class="project-info">
-                <p class="project-info-title">Deposit</p>
-                <p class="project-info-text">{{convertCurrency(currentProperty.Deposit)}}</p>
-            </div>
-            <div class="project-info">
-                <p class="project-info-title">Estimated Annual Rental Income</p>
-                <p class="project-info-text">{{convertCurrency(currentProperty.EstimatedAnnualRentalIncome)}}</p>
-            </div>
-            <div class="project-info">
-                <p class="project-info-title">Estimated Monthly Rental Income</p>
-                <p class="project-info-text">{{convertCurrency(currentProperty.EstimatedMonthlyRentalIncome)}}</p>
-            </div>
-            <div class="project-info">
-                <p class="project-info-title">Guide Price</p>
-                <p class="project-info-text">{{convertCurrency(currentProperty.GuidePrice)}}</p>
-            </div>
-            <div class="project-info">
-                <p class="project-info-title">ROI On Sale</p>
-                <p class="project-info-text">{{convertCurrency(currentProperty.ROIOnSale)}}</p>
-            </div>
-            <div class="project-info">
-                <p class="project-info-title">ROI Percentage</p>
-                <p class="project-info-text">{{currentProperty.ROIPercentage}}%</p>
-            </div>
-            <div class="project-info">
-                <p class="project-info-title">Rental Expenses</p>
-                <p class="project-info-text">{{convertCurrency(currentProperty.RentalExpenses)}}</p>
-            </div>
-            <div class="project-info">
-                <p class="project-info-title">Total Cash Required</p>
-                <p class="project-info-text">{{convertCurrency(currentProperty.TotalCashRequired)}}</p>
-            </div>
-            <div class="project-info">
-                <p class="project-info-title">Short Summary</p>
-                <p class="project-info-text">{{currentProperty.ShortSummary}}</p>
+
+            <div class="action-btn">
+              <button class="register--white" @click="$refs.actionsOneGroup.open()">
+                <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:card_travel"></f7-icon>
+                Sell Property
+                </button>
+              <button class="register--btn" @click="$refs.actionsOneGroup.open()">
+                <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:card_travel"></f7-icon>
+                  Withdraw
+                </button>
             </div>
         </f7-block>
 
@@ -142,6 +85,7 @@
             >
             <f7-page-content>
                 <f7-block>
+                  <p class="request-title">How much do you want to buy?</p>
                 <form @submit.prevent="makeRequest" no-store-data="true" class="list form-store-data" id="demo-form">
                   <ul>
                     <li class="item-content item-input">
@@ -152,11 +96,14 @@
                         </div>
                       </div>
                     </li>
-                    <li>
-                      <f7-button class="verify--btn" type="submit">Make Request</f7-button>
-                    </li>
                     
                   </ul>
+                  <p class="request-income">Your Monthly Rental Income:
+                    <span>{{convertCurrency(50)}}</span>
+                  </p>
+                  <p class="request-info">Based on your purchase amount entered above, your monthly rental income of <strong>{{convertCurrency(50)}}</strong> will be paid on the last day of next month.</p>
+
+                  <f7-button class="verify--btn" type="submit">Proceed to Payment</f7-button>
                 </form>
                 </f7-block>
             </f7-page-content>
@@ -245,7 +192,8 @@ export default {
           for (let i = 0; i < this.properties.length; i++) {
         if( this.properties.id == this.getParam) {
             console.log("True");
-            this.currentProperty = this.properties[0].data();
+            this.currentProperty = this.properties[i][0].data();
+            console.log(this.properties[i][0].data());
             console.log(this.currentProperty);
           }    
         }
@@ -381,31 +329,43 @@ export default {
 
     .project-type {
         display: flex;
+        color: #2B3D4C;;
         flex-direction: column;
-        font-size:1.1rem;
+        font-size:1.5rem;
         font-weight: 500;
+        margin-top: 0.2rem;
     }
 
     .project-type span {
-        font-size:0.7rem;
-        font-weight: lighter;
+      color: #2B3D4C;;
+      font-size: 1.1rem;
+      font-weight: lighter;
     }
 
     .project-location {
       display: flex !important;
       flex-direction: row !important;
+      font-size: 1.3rem;
     }
 
     .project-price {
         background: rgba(7, 153, 144, 0.4);
         color: rgb(43, 61, 76);
+        display: block;
         border-radius: 0.3rem;
         font-size: 0.9rem !important;
         font-weight: bold !important;
-        margin-top: 0.3rem;
-        padding: 0.3rem 0.4rem;
+        margin-top: 0.9rem;
+        margin-bottom: 2.5rem;
+        padding: 0.3rem 0rem;
         text-align: center;
         width: 50%;
+    }
+
+    .action-btn {
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
     }
 
     .project-icons {
@@ -541,10 +501,26 @@ export default {
 
     .register--btn {
     background: #2B3D4C;
+    border: 1px solid #2B3D4C;;
     border-radius: 0px;
     color: #fff;
-    font-weight: 500;
-    padding: 0.5rem 0.7rem;
+    font-size: 1rem;
+    font-weight: 400;
+    padding: 0.5rem 0.2rem;
+    outline: none;
+    width: 45%;
+  }
+
+  .register--white {
+    background: #fff;
+    border: 1px solid #2B3D4C;
+    border-radius: 0px;
+    color:#2B3D4C;
+    font-size: 1rem;
+    font-weight: 400;
+    padding: 0.5rem 0.2rem;
+    outline: none;
+    width: 45%;
   }
 
   .block-strong {

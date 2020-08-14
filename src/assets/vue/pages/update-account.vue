@@ -1,20 +1,20 @@
 <template>
   <f7-page>
   <f7-navbar class="home--nav">
-    <f7-navbar back-link="Update Bank Details" back-link-show-text></f7-navbar>
+    <f7-navbar back-link="Back" back-link-show-text></f7-navbar>
       <f7-nav-right>
         <img :src="logo" class="logo">
       </f7-nav-right>
     </f7-navbar>
     
     <f7-page-content class="register">
-    <div class="image">
+    <div class="user-image">
       <div class="dp">
-        <img :src="user" class="user">
+        <img :src="image" class="user-image">
       </div>
       
     </div>
-    <form @submit.prevent="submitted" no-store-data="true" class="list form-store-data" id="demo-form">
+    <form @submit.prevent="updateAccount" no-store-data="true" class="list form-store-data" id="demo-form">
       <ul>
       <li class="item-content item-input">
           <div class="item-inner">
@@ -39,6 +39,15 @@
             <div class="item-title item-label">Bank Name</div>
             <div class="item-input-wrap">
               <input name="bankName" type="text" v-model="bankName" autocomplete="off">
+              <span class="input-clear-button"></span>
+            </div>
+          </div>
+        </li>
+        <li class="item-content item-input">
+          <div class="item-inner">
+            <div class="item-title item-label">Sort/Swift Code</div>
+            <div class="item-input-wrap">
+              <input name="sortCode" type="text" v-model="sortCode" autocomplete="off">
               <span class="input-clear-button"></span>
             </div>
           </div>
@@ -74,12 +83,36 @@ export default {
     return {
       errors: [],
       logo,
-      user,
+      image: null,
       AccName: '',
       AccNumber: '',
       bankName: "",
+      sortCode: ""
     }
   },
+  mounted(){
+    firebase.auth().onAuthStateChanged(users => {
+      if(users) {
+          const user = firebase.auth().currentUser;
+        let displayName, email, photoUrl, uid, emailVerified;
+
+      if (user != null) {
+        this.image = user.photoURL;
+        this.id = user.uid;
+        console.log(this.id);
+        this.getAccount();
+      }else {
+        this.$f7router.navigate('/login/');
+      }
+      }else {
+          this.$f7router.navigate('/login/');
+          console.log("User logged out");
+      }
+  });    
+
+},
+
+
   methods: {
 
     previewImage(event) {
@@ -88,53 +121,39 @@ export default {
       this.imageData = event.target.files[0];
     },
 
-    async submitted() {
+    async getAccount() {
+        try {
+          firebase.firestore().collection("users").where(firebase.firestore.FieldPath.documentId(), "==", this.id).get().then((snapshot) => {
+            let results = snapshot.docs.map(doc => {
+              this.userId = doc.id;
+              this.user = doc.data();
+            })
+
+            this.bankName = this.user.bankName;
+            this.AccName = this.user.bankAccountName;
+            this.AccNumber = this.user.bankNumber;
+            this.sortCode = this.user.bankSortCode;
+            
+          })
+          
+      } catch (err) {
+        console.log(err);
+      }
+      return true;
+      
+    },
+
+    async updateAccount() {
       this.$f7.preloader.show();
       try {
-
-            const storageRef = firebase.storage().ref(`${this.imageData.name}`).put(this.imageData);
-            storageRef.on(`state_changed`,snapshot => {
-            this.uploadValue = (snapshot.bytesTransferred / snapshot.totalBytes)*100;
-          }, error => {console.log(error.message)},
-          () => {this.uploadValue = 100;
-            storageRef.snapshot.ref.getDownloadURL().then((url) => {
-              this.picture = url;
-              pics = url;
-            }).then(() => {
-            Email.send({
-              secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
-              Host : "smtp.elasticemail.com",
-              Username : "essiensaviour.a@gmail.com",
-              Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
-              To : this.email,
-              From : "essiensaviour.a@gmail.com",
-              Subject : "Verify Your Email - TrimHomes",
-              Body : `
-              <p>Thank you for registering with TrimHomes</p>
-              <p>Here is your token <strong>${token}</strong> to verify your email. </p>
-              `
-          }).then(
-            message => console.log(message)
-          );
-          }).then(() => {
-            const userInfo = {
-              email: this.email,
-              city: this.city,
-              country: this.country,
-              fullName: this.fullName,
-              image: pics,
-              memorableNumber: this.memorableNumber,
-              phone: this.phone,
-              postalCode: this.postalCode,
-              verified: false,
-              created: new Date(),
-              token
-            }
-            localStorage.setItem('trimhomesUser', JSON.stringify(userInfo));
+              return firebase.firestore().collection("users").doc(this.id).update({
+              bankName: this.bankName,
+              bankAccountName: this.AccName,
+              bankNumber: this.AccNumber,
+              bankSortCode: this.sortCode,
           }).then(() => {
           this.$f7.preloader.hide();
-          this.$f7router.navigate('/verify-token/');
-        });
+          this.$f7.dialog.alert(`Your bank account details has been updated`, "Success");
         });
             
           
@@ -203,6 +222,21 @@ export default {
     height: 80px;
     object-fit: cover;
     width: 80px;
+  }
+
+  .user-image {
+    align-items: center;
+    background: #2B3D4C;
+    display: flex;
+    margin-bottom: 2.5rem;
+    padding: 0.5rem 0 0rem 0;
+    justify-content: center;
+  }
+
+  .user-image img {
+    border-radius: 50%;
+    height: 90px;
+    width: 90px;
   }
 
   .upload-text {

@@ -9,10 +9,10 @@
     <!--<f7-navbar back-link="Back"></f7-navbar>-->
     <f7-page-content class="confirm">
     <div class="block block-strong">
-      <f7-block-title class="confirm--title">You’ve got mail....</f7-block-title>
-      <p class="text">Please check your mailbox for an email from Trim Homes UK and enter the confirmation  code you received below:</p>
+      <f7-block-title class="confirm--title">Welcome {{name}}</f7-block-title>
+      <p class="text">You can now set a password for your brand new account.</p>
     </div>
-    <form @submit.prevent="submitted" no-store-data="true" class="list form-store-data" id="password-form">
+    <form @submit.prevent="registerUser" no-store-data="true" class="list form-store-data" id="password-form">
       <ul>
         <li class="item-content item-input disabled">
           <div class="item-inner">
@@ -26,7 +26,7 @@
           <div class="item-inner">
             <div class="item-title item-label">Create a strong password:</div>
             <div class="item-input-wrap">
-              <input name="password" v-model="password" type="password">
+              <input name="password" v-model="password" type="password" validate pattern="[0-9]*" data-error-message="Must contain number and etters please!">
               <span v-if="msg.password">{{msg.password}}</span>
               <span class="input-clear-button"></span>
             </div>
@@ -67,15 +67,18 @@ export default {
     return {
       logo,
       msg: [],
-      token: userInfo,
+      token: null,
       password: '',
       cPassword: '',
+      name: null,
     }
   },
   mounted() {
   console.log('App mounted!');
     if (localStorage.getItem('trimhomeUser'));
     userInfo = JSON.parse(localStorage.getItem('trimhomesUser'));
+    this.token = userInfo.token;
+    this.name = userInfo.firstName;
     console.log(userInfo);
   },
   watch: {
@@ -89,10 +92,10 @@ export default {
     }
   },
   methods: {
-    validatePassword(value){
+    validatePassword(value) {
       let difference = 8 - value.length;
       if (value.length < 8) {
-        this.msg['password'] = 'Must be 8 characters! '+ difference + ' characters left' ;
+        this.msg['password'] = 'Must be 8 characters or  more!';
       } else {
          this.msg['password'] = 'Good Enough';
       }
@@ -104,25 +107,30 @@ export default {
          this.msg['cPassword'] = 'Password Match';
       }
     },
-    async submitted() {
+    async registerUser() {
       this.$f7.preloader.show();
       if(this.password.trim() !== "" && this.cPassword.trim() !== "" && this.cPassword === this.password) {
         try {
           firebase.auth().createUserWithEmailAndPassword(userInfo.email, this.password).then(users => {
           return firebase.firestore().collection("users").doc(users.user.uid).set({
-              city: userInfo.city,
-              country: userInfo.country,
-              memorableNumber: userInfo.memorableNumber,
               phone: userInfo.phone,
-              postalCode: userInfo.postalCode,
-              verified: false,
+              address: userInfo.address,
+              city: '',
+              country: '',
+              memorableNumber: userInfo.memorableNumber,
+              bankName: '',
+              bankNumber: '',
+              bankAccountName: '',
+              bankSortCode: '',
+              postalCode: '',
+              token: userInfo.token,
+              verified: true,
               created: userInfo.created,
-              token: ""
         });
         }).then(() => {
           let user = firebase.auth().currentUser;
             user.updateProfile({
-            displayName: userInfo.fullName,
+            displayName: userInfo.firstName + ' ' + userInfo.lastName,
             photoURL: userInfo.image
           }).then(()=> {
             Email.send({
@@ -132,13 +140,156 @@ export default {
               Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
               To : userInfo.email,
               From : "essiensaviour.a@gmail.com",
-              Subject : "Verify Your Email - TrimHomes",
+              Subject : "Welcome to TrimHomes UK",
               Body : `
-              <p>Welcome to TrimHomes</p>
-              <p>Thank for creating an account with us, you can now enjoy all the benefits we offer.</p>
+              <!doctype html>
+                <html>
+                  <head>
+                    <meta name="viewport" content="width=device-width">
+                    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+                    <title>TrimHomes Welcome Email</title>
+                    <style>
+                    /* -------------------------------------
+                        INLINED WITH htmlemail.io/inline
+                    ------------------------------------- */
+                    /* -------------------------------------
+                        RESPONSIVE AND MOBILE FRIENDLY STYLES
+                    ------------------------------------- */
+                    @media only screen and (max-width: 620px) {
+                      table[class=body] h1 {
+                        font-size: 28px !important;
+                        margin-bottom: 10px !important;
+                      }
+                      table[class=body] p,
+                            table[class=body] ul,
+                            table[class=body] ol,
+                            table[class=body] td,
+                            table[class=body] span,
+                            table[class=body] a {
+                        font-size: 16px !important;
+                      }
+                      table[class=body] .wrapper,
+                            table[class=body] .article {
+                        padding: 10px !important;
+                      }
+                      table[class=body] .content {
+                        padding: 0 !important;
+                      }
+                      table[class=body] .container {
+                        padding: 0 !important;
+                        width: 100% !important;
+                      }
+                      table[class=body] .main {
+                        border-left-width: 0 !important;
+                        border-radius: 0 !important;
+                        border-right-width: 0 !important;
+                      }
+                      table[class=body] .btn table {
+                        width: 100% !important;
+                      }
+                      table[class=body] .btn a {
+                        width: 100% !important;
+                      }
+                      table[class=body] .img-responsive {
+                        height: auto !important;
+                        max-width: 100% !important;
+                        width: auto !important;
+                      }
+                    }
+
+                    /* -------------------------------------
+                        PRESERVE THESE STYLES IN THE HEAD
+                    ------------------------------------- */
+                    @media all {
+                      .ExternalClass {
+                        width: 100%;
+                      }
+                      .ExternalClass,
+                            .ExternalClass p,
+                            .ExternalClass span,
+                            .ExternalClass font,
+                            .ExternalClass td,
+                            .ExternalClass div {
+                        line-height: 100%;
+                      }
+                      .apple-link a {
+                        color: inherit !important;
+                        font-family: inherit !important;
+                        font-size: inherit !important;
+                        font-weight: inherit !important;
+                        line-height: inherit !important;
+                        text-decoration: none !important;
+                      }
+                      #MessageViewBody a {
+                        color: inherit;
+                        text-decoration: none;
+                        font-size: inherit;
+                        font-family: inherit;
+                        font-weight: inherit;
+                        line-height: inherit;
+                      }
+                      .btn-primary table td:hover {
+                        background-color: #34495e !important;
+                      }
+                      .btn-primary a:hover {
+                        background-color: #34495e !important;
+                        border-color: #34495e !important;
+                      }
+                    }
+                    </style>
+                  </head>
+                  <body class="" style="background-color: #f6f6f6; font-family: sans-serif; -webkit-font-smoothing: antialiased; font-size: 14px; line-height: 1.4; margin: 0; padding: 0; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;">
+                    <table border="0" cellpadding="0" cellspacing="0" class="body" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background-color: #f6f6f6;">
+                      <tr>
+                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">&nbsp;</td>
+                        <td class="container" style="font-family: sans-serif; font-size: 14px; vertical-align: top; display: block; Margin: 0 auto; max-width: 580px; padding: 10px; width: 580px;">
+                          <div class="content" style="box-sizing: border-box; display: block; Margin: 0 auto; max-width: 580px; padding: 10px;">
+
+                            <!-- START CENTERED WHITE CONTAINER -->
+                            <table class="main" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background: #ffffff; border-radius: 3px;">
+
+                              <!-- START MAIN CONTENT AREA -->
+                              <tr>
+                                <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;">
+                                  <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
+                                    <tr>
+                                      <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
+                                      <p style="background: #2B3D4C; padding: 0.2rem 0; text-align: center;"><img src="https://lirp-cdn.multiscreensite.com/7e157610/dms3rep/multi/opt/3-68f7e3f4-218w.png" style="width: 120px;"></p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Welcome to TrimHomes UK Family</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Thank you ${this.firstName} for creating an account with us, you can now enjoy all the benefits we offer.</p>
+                                       
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+
+                            <!-- END MAIN CONTENT AREA -->
+                            </table>
+
+                            <!-- START FOOTER -->
+                            <div class="footer" style="clear: both; Margin-top: 10px; text-align: center; width: 100%;">
+                              <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
+                                <tr>
+                                  <td class="content-block" style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; font-size: 12px; color: #999999; text-align: center;">
+                                    <span class="apple-link" style="color: #999999; font-size: 12px; text-align: center;">12 Streatham Place, Bradwell Common, Milton Keynes, England MK13 8RG</span>
+                                  </td>
+                                </tr>
+                              </table>
+                            </div>
+                            <!-- END FOOTER -->
+
+                          <!-- END CENTERED WHITE CONTAINER -->
+                          </div>
+                        </td>
+                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">&nbsp;</td>
+                      </tr>
+                    </table>
+                  </body>
+                </html>
               `
           }).then(
-            message => console.log(message)
+            message => console.log(message + "Sent")
           );
           }).then(()=> {
             this.$f7.preloader.hide();
@@ -220,7 +371,7 @@ export default {
     font-size: 0.9rem;
     font-weight: 350;
     margin-bottom: 1.5rem !important;
-    padding-right: 35px;
+    text-align: center;
   }
 
   .valid {

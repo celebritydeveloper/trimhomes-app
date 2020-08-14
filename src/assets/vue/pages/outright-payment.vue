@@ -1,60 +1,28 @@
 <template>
   <f7-page>
   <f7-navbar class="home--nav">
-    <f7-navbar back-link="Create Account" back-link-show-text></f7-navbar>
+    <f7-navbar back-link="Back" back-link-show-text></f7-navbar>
       <f7-nav-right>
         <img :src="logo" class="logo">
       </f7-nav-right>
     </f7-navbar>
     
     <f7-page-content class="register">
-    <div class="block block-strong">
-      <!--<div   class="dp">
-        <img :src="user" class="user">
-        <p>{{uploadValue.toFixed() + "%"}}
-      <progress id="progress" :value="uploadValue" max="100" ></progress>  </p>
-      </div>-->
-      
-
-
-      <div>
-      
-    </div>
-      
-    </div>
-    <form @submit.prevent="submitted" no-store-data="true" class="list form-store-data" id="demo-form">
-      <ul>
-      <li class="item-content item-input image">
-          <div class="item-inner">
-            <div class="item-input-wrap">
-            
-              <label for="image">
-                <img :src="user" class="user">
-              </label>
-              
-              <div class="dp">
-                <input name="image" id="image" class="upload" accept="image/*" type="file" @change="previewImage" required validate data-error-message="Please upload your image!">
-                <p>{{uploadValue.toFixed() + "%"}}
-                <progress id="progress" :value="uploadValue" max="100" ></progress>  </p>
-              </div>
+        <f7-block class="block block-strong">
+            <div class="contact-block">
+                <f7-icon ios="f7:envelope" aurora="f7:envelope" md="material:email"></f7-icon>
+                <f7-block-title class="title">We Will Get In Touch</f7-block-title>
+                <p>Please confirm that the contact details we hold for you are correct and a member of the TRIM HOMES team will contact you with more information.</p>
             </div>
-          </div>
-      </li>
+        </f7-block>
+
+    <form @submit.prevent="requestOutright" no-store-data="true" class="list form-store-data" id="demo-form">
+      <ul>
       <li class="item-content item-input">
           <div class="item-inner">
-            <div class="item-title item-label">First Name</div>
+            <div class="item-title item-label">Full Name</div>
             <div class="item-input-wrap">
-              <input name="firstName" type="text" v-model="firstName" required validate data-error-message="Your Name is Required!">
-              <span class="input-clear-button"></span>
-            </div>
-          </div>
-        </li>
-        <li class="item-content item-input">
-          <div class="item-inner">
-            <div class="item-title item-label">Surname</div>
-            <div class="item-input-wrap">
-              <input name="lastName" type="text" v-model="lastName" required validate data-error-message="Your Name is Required!">
-              <span class="input-clear-button"></span>
+              <input name="fullName" type="text" v-model="name">
             </div>
           </div>
         </li>
@@ -62,8 +30,7 @@
           <div class="item-inner">
             <div class="item-title item-label">E-mail</div>
             <div class="item-input-wrap">
-              <input name="email" type="email" v-model="email" autocomplete="off" required validate data-error-message="Email must not be empty and should be valid!">
-              <span class="input-clear-button"></span>
+              <input name="email" type="email" v-model="email">
             </div>
           </div>
         </li>
@@ -71,51 +38,16 @@
           <div class="item-inner">
             <div class="item-title item-label">Phone Number</div>
             <div class="item-input-wrap">
-              <input name="phone" type="tel" v-model="phone" required validate pattern="[0-9]*" data-error-message="Only numbers please!">
-              <span class="input-clear-button"></span>
-            </div>
-          </div>
-        </li>
-        <li class="item-content item-input">
-          <div class="item-inner">
-            <div class="item-title item-label">Memorable Number</div>
-            <div class="item-input-wrap">
-              <input name="password" type="text" v-model="memorableNumber" required validate pattern="[0-9]*" data-error-message="Only numbers please!">
-              <span class="input-clear-button"></span>
-            </div>
-          </div>
-        </li>
-        <li class="item-content item-input">
-          <div class="item-inner">
-            <div class="item-title item-label">Address:</div>
-            <div class="item-input-wrap">
-              <input name="address" type="text" v-model="address" required validate>
-              <span class="input-clear-button"></span>
-            </div>
-          </div>
-        </li>
-        <li class="item-content item-input">
-          <div class="item-inner">
-            <div class="item-title item-label">How Did You Hear About Us?:</div>
-            <div class="item-input-wrap input-dropdown-wrap">
-              <select v-model="referrer ">
-                <option disabled selected>Please Select an Option</option>
-                <option value="Male">Family</option>
-                <option value="Female">Friend</option>
-                <option value="Private Institution">Private Institution</option>
-                <option value="Advert">Advert</option>
-                <option value="Social Media">Social Media</option>
-                <option value="Member of Staff">Member of Staff</option>
-              </select>
+              <input name="phone" type="tel" v-model="phone">
             </div>
           </div>
         </li>
         <li>
-          <p class="terms">By clicking ‘Create Account’, you agree to our  
-          <f7-link class="forgot-btn" href="/forgot-password/">Terms &amp; Conditions</f7-link> 
-          and our  
-          <f7-link class="forgot-btn" href="/forgot-password/"> Privacy Policy.</f7-link></p>
-          <f7-button class="register--btn" type="submit">Create Account</f7-button>
+          <p class="terms">By clicking “Submit”  you consent to being contacted by TRIM HOMES for the purpose 
+                of property acquisition services. Please refer to our <f7-link class="forgot-btn" href="/forgot-password/"> Privacy Policy.</f7-link> for more details of
+                how we use your contact information.  
+          </p>
+          <f7-button class="signup--btn" type="submit">Submit</f7-button>
         </li>
         
       </ul>
@@ -128,35 +60,44 @@ import logo from '../../images/logo-nav.png';
 import user from '../../images/user.png';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
-import 'firebase/storage'
-import OTP from 'otp-client';
 
 
-const secret = 'TPQDAHVBZ5NBO5LFEQKC7V7UPATSSMFY'
-const otp = new OTP(secret);
-const token = otp.getToken();
 
-const Email = { send: function (a) { return new Promise(function (n, e) { a.nocache = Math.floor(1e6 * Math.random() + 1), a.Action = "Send"; var t = JSON.stringify(a); Email.ajaxPost("https://smtpjs.com/v3/smtpjs.aspx?", t, function (e) { n(e) }) }) }, ajaxPost: function (e, n, t) { var a = Email.createCORSRequest("POST", e); a.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), a.onload = function () { var e = a.responseText; null != t && t(e) }, a.send(n) }, ajax: function (e, n) { var t = Email.createCORSRequest("GET", e); t.onload = function () { var e = t.responseText; null != n && n(e) }, t.send() }, createCORSRequest: function (e, n) { var t = new XMLHttpRequest; return "withCredentials" in t ? t.open(e, n, !0) : "undefined" != typeof XDomainRequest ? (t = new XDomainRequest).open(e, n) : t = null, t } };
-
-let pics;
 export default {
-  name: "Upload",
   data() {
     return {
       errors: [],
       logo,
-      user,
-      imageData: null,
-      picture: null,
-      uploadValue: 0,
-      firstName: '',
-      lastName: '',
-      email: "",
-      phone: "",
-      memorableNumber: "",
-      address: "",
-      referrer: '',
+      name: null,
+      email: null,
+      phone: null,
+      uid: null,
+      account: null
     }
+  },
+  mounted() {
+    firebase.auth().onAuthStateChanged(user => {
+    if(user) {
+        const user = firebase.auth().currentUser;
+      let name, displayName, email, photoUrl, uid, emailVerified;
+
+     if (user != null) {
+      this.name = user.displayName;
+      this.email = user.email;
+      // photoUrl = user.photoURL;
+      // emailVerified = user.emailVerified;
+      this.uid = user.uid;
+      this.getAccount();
+    }else {
+      this.$f7router.navigate('/login/');
+    }
+    }else {
+        console.log("User logged out");
+        this.$f7router.navigate('/login/');
+    }
+    });
+
+    
   },
   methods: {
 
@@ -166,19 +107,30 @@ export default {
       this.imageData = event.target.files[0];
     },
 
-    async submitted() {
+    async getAccount() {
+        try {
+          firebase.firestore().collection("users").where(firebase.firestore.FieldPath.documentId(), "==", this.uid).get().then((snapshot) => {
+            let results = snapshot.docs.map(doc => {
+              this.userId = doc.id;
+              this.account = doc.data();
+            })
+
+            console.log(this.account);
+
+            this.phone = this.account.phone;
+            
+          })
+          
+      } catch (err) {
+        console.log(err);
+      }
+      return true;
+      
+    },
+
+    async requestOutright() {
       this.$f7.preloader.show();
       try {
-
-            const storageRef = firebase.storage().ref(`${this.imageData.name}`).put(this.imageData);
-            storageRef.on(`state_changed`,snapshot => {
-            this.uploadValue = (snapshot.bytesTransferred / snapshot.totalBytes)*100;
-          }, error => {console.log(error.message)},
-          () => {this.uploadValue = 100;
-            storageRef.snapshot.ref.getDownloadURL().then((url) => {
-              this.picture = url;
-              pics = url;
-            }).then(() => {
             Email.send({
               secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
               Host : "smtp.elasticemail.com",
@@ -186,14 +138,14 @@ export default {
               Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
               To : this.email,
               From : "essiensaviour.a@gmail.com",
-              Subject : "Verify Your Email - TrimHomes UK",
+              Subject : "Verify Your Email - TrimHomes",
               Body : `
               <!doctype html>
                 <html>
                   <head>
                     <meta name="viewport" content="width=device-width">
                     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-                    <title>TrimHomes Verify Token Email</title>
+                    <title>TrimHomes Welcome Email</title>
                     <style>
                     /* -------------------------------------
                         INLINED WITH htmlemail.io/inline
@@ -301,24 +253,16 @@ export default {
                                     <tr>
                                       <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
                                       <p style="background: #2B3D4C; padding: 0.2rem 0; text-align: center;"><img src="https://lirp-cdn.multiscreensite.com/7e157610/dms3rep/multi/opt/3-68f7e3f4-218w.png" style="width: 120px;"></p>
-                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Hello <strong>${this.firstName}</strong>,</p>
-                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Thank you for registering with TrimHome UK</p>
-                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Use the following code to verify your email address</p>
-                                        <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; box-sizing: border-box;">
-                                          <tbody>
-                                            <tr>
-                                              <td align="left" style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding-bottom: 15px;">
-                                                <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: auto;">
-                                                  <tbody>
-                                                    <tr>
-                                                      <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; background-color: #3498db; border-radius: 5px; text-align: center;"> <span style="display: inline-block; color: #ffffff; background-color: #2B3D4C; border: solid 1px #2B3D4C; border-radius: 5px; box-sizing: border-box; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-transform: capitalize; border-color: #3498db;">${token}</span> </td>
-                                                    </tr>
-                                                  </tbody>
-                                                </table>
-                                              </td>
-                                            </tr>
-                                          </tbody>
-                                        </table>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Hello Timi,</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">An outright payment request has been made by ${this.name}. Below are his details.</p>
+
+                                        <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 8px;">Email Address:</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.email}</p>
+
+                                        <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 8px;">Phone Number:</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.phone}</p>
+                                       
+                                       
                                       </td>
                                     </tr>
                                   </table>
@@ -350,30 +294,10 @@ export default {
                 </html>
               `
           }).then(
-            message => console.log(message + "Sent")
-          );
-          }).then(() => {
-            const userInfo = {
-              firstName: this.firstName,
-              lastName: this.lastName,
-              email: this.email,
-              image: pics,
-              memorableNumber: this.memorableNumber,
-              phone: this.phone,
-              address: this.address,
-              bankName: '',
-              bankNumber: '',
-              bankAccountName: '',
-              bankSortCode: '',
-              verified: false,
-              created: new Date(),
-              token
-            }
-            localStorage.setItem('trimhomesUser', JSON.stringify(userInfo));
-          }).then(() => {
+            message => console.log(message)
+          ).then(() => {
           this.$f7.preloader.hide();
-          this.$f7router.navigate('/verify-token/');
-        });
+          this.$f7.dialog.alert('Your request has been sent. Admin will reach out ASAP', "Success");
         });
             
           
@@ -440,55 +364,23 @@ export default {
     width: 0px;
   }
 
-  .image {
-    text-align: center;
+  .contact-block {
+      text-align: center;
+      margin-bottom: 1.3rem;
   }
 
-
-  .dp {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .user {
-    border-radius: 50%;
-    height: 100px;
-    object-fit: cover;
-    width: 100px;
-  }
-
-  .upload::-webkit-file-upload-button {
-    color: transparent;
-    display: none;
-  }
-
-  /* The overlay effect (full height and width) - lays on top of the container and over the image */
-.overlay {
-  border-radius: 50%;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 100px;
-  width: 100px;
-  opacity: 1;
-  transition: .3s ease;
-  background-color: rgba(0, 0, 0, 0.5);
-}
+ 
 
 .icon {
-  color: white;
-  font-size: 1.2rem;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  text-align: center;
+  color: #2B3D4C;
+  font-size: 2.5rem;
+  margin-bottom: 0rem;
+  padding: 0;
 }
+
+    .title {
+        font-size: 1.3rem;
+    }
   
 
   /* .upload::before {
@@ -546,7 +438,7 @@ export default {
     color: #2B3D4C;
     font-size: 0.6rem;
     font-weight: lighter;
-    padding: 5px 90px 5px 20px;
+    padding: 5px 30px 5px 20px;
   }
 
   .terms .forgot-btn {

@@ -12,7 +12,7 @@
       <f7-block-title class="confirm--title">You’ve got mail....</f7-block-title>
       <p class="text">Please check your mailbox for an email from Trim Homes UK and enter the confirmation  code you received below:</p>
     </div>
-    <form @submit.prevent="submitted" no-store-data class="list form-store-data" id="password-form">
+    <form @submit.prevent="verifyToken" no-store-data class="list form-store-data" id="password-form">
       <ul>
         <li class="item-content item-input">
           <div class="item-inner">
@@ -21,7 +21,7 @@
             </div>
           </div>
         </li>
-        <span v-if="msg.token" class="valid">{{msg.token}}</span>
+        <!--<span v-if="msg.token" class="valid">{{msg.token}}</span>-->
         <li>
           <f7-button class="verify--btn" type="submit">Verify</f7-button>
           <p class="terms">If you didn’t recieve a code!  
@@ -54,6 +54,7 @@ export default {
       logo,
       msg: [],
       token: '',
+      userId: null,
     }
   },
   mounted() {
@@ -80,7 +81,7 @@ export default {
          this.msg['token'] = '';
       }
     },
-    async submitted() {
+    async verifyToken() {
         this.$f7.preloader.show();
         try {
             if (this.token === userInfo.token) { 
@@ -89,7 +90,6 @@ export default {
                 userToken.verified = true;
                 localStorage.setItem("trimhomesUser", JSON.stringify(userToken));
               }
-                
                 this.$f7router.navigate('/set-password/');
                 this.$f7.preloader.hide();
             }else {
@@ -105,13 +105,13 @@ export default {
     async resendToken() {
         this.$f7.preloader.show();
         try {
-          firebase.firestore().collection("users").where("email", "==", userInfo.email).get().then((snapshot) =>{
+          firebase.firestore().collection("users").where("phone", "==", userInfo.phone).get().then((snapshot) => {
             let results = snapshot.docs.map(doc => {
               userId = doc.id;
               console.log(doc.id);
             });
             firebase.firestore().collection("users").doc(userId).update({
-              otp: otpCode,
+              token: otpCode,
           }).then(() => {
             
             console.log("Updated");

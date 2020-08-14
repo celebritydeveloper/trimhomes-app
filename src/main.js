@@ -39,13 +39,6 @@ import store from './assets/vuex/storage.js';
 
 import firebase from 'firebase/app';
 
-//import sgMail from '@sendgrid/mail';
-
-// import env from 'dotenv';
-
-// env.config();
-
-
 
 
 // Your web app's Firebase configuration

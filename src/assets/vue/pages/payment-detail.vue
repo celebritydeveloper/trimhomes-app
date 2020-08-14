@@ -35,21 +35,50 @@
         <f7-tabs swipeable>
             <f7-tab id="tab-1" class="page-content" tab-active>
             <f7-block class="bank-detail">
-                <p><f7-icon ios="f7:placemark" aurora="f7:placemark" md="material:account_balance_wallet"></f7-icon></p>
+                <p><f7-icon class="bank-icon" ios="f7:placemark" aurora="f7:placemark" md="material:account_balance_wallet"></f7-icon></p>
                 <div>
                     <p class="acc-title">Account Number</p>
-                    <p class="acc-detail">0234102010</p>
+                    <p class="acc-detail">62090917</p>
+                </div>
+                <div>
+                    <p class="acc-title">Bank Name</p>
+                    <p class="acc-detail">Natwest Bank</p>
                 </div>
                 <div>
                     <p class="acc-title">Account Name</p>
                     <p class="acc-detail">TrimHomes Limited</p>
                 </div>
+                <div>
+                    <p class="acc-title">Sort Code</p>
+                    <p class="acc-detail">60-14-10</p>
+                </div>
             </f7-block>
             </f7-tab>
             <f7-tab id="tab-2" class="page-content">
             <f7-block>
-                <p>Tab 2 content</p>
-                ...
+            <div v-if="paidFor">
+              <div class="paid">
+                <p><f7-icon class="paypal-icon" ios="f7:placemark" aurora="f7:placemark" md="material:account_balance_wallet"></f7-icon></p>
+                <p class="payment-text">Trim Homes received your payment of </p>
+                <h2 class="payment-price">{{convertCurrency(product.price)}}</h2>
+              </div>
+              <div class="">
+                <h3 class="payment-head">Transaction Details</h3>
+                <div class="payment-detail">
+                  <p class="payment-title">Reference:</p>
+                  <p class="payment-ref">LKJJBJ8OJNB78O</p>
+                </div>
+                <div class="payment-detail">
+                  <p class="payment-title">Date:</p>
+                  <p class="payment-ref">29th June, 2020</p>
+                </div>
+              </div>
+
+              <p class="payment-footer">If you have any issues with this payment, kindly reply to this email or send an email to team@trimhomes.co.uk</p>
+
+              
+            </div>
+                <div ref="paypal"></div>
             </f7-block>
             </f7-tab>
         </f7-tabs>
@@ -120,7 +149,15 @@ export default {
         properties: [],
         currentProperty: {},
         userName,
-        //userUid,
+        email: null,
+        loaded: false,
+        paidFor: false,
+        product: {
+        price: null,
+        description: "leg lamp from that one movie",
+        img: "./assets/lamp.jpg",
+        userProps: null,
+      }
       }
   },
   mounted() {
@@ -128,6 +165,10 @@ export default {
     userInfo = JSON.parse(localStorage.getItem('trimhomesUser'));
     console.log(userInfo);
     userEmail = userInfo.email;
+
+    if (localStorage.getItem('userProperty'));
+    this.userProps = JSON.parse(localStorage.getItem('userProperty'));
+    this.price = this.userProps.amount;
 
     this.fetchByParam();
 
@@ -138,7 +179,7 @@ export default {
 
      if (user != null) {
       this.name = user.displayName;
-      // email = user.email;
+      this.email = user.email;
       // photoUrl = user.photoURL;
       // emailVerified = user.emailVerified;
       this.userUid = user.uid;
@@ -150,11 +191,47 @@ export default {
         this.$f7router.navigate('/login/');
     }
     });
+
+    const script = document.createElement("script");
+    script.src =
+      "https://www.paypal.com/sdk/js?client-id=ATLlN-1s3VyZQVqlPp5MV1Mf_uCCKKEdC1sQAdVlI-OcRi7NYietzy_rCx45wrYxdBeQ0-G5kEeUjQEA";
+    script.addEventListener("load", this.setLoaded);
+    document.body.appendChild(script);
   },
   components: {
       f7Sheet,
   },
   methods: {
+    setLoaded: function() {
+      this.loaded = true;
+      window.paypal
+        .Buttons({
+          createOrder: (data, actions) => {
+            return actions.order.create({
+              purchase_units: [
+                {
+                  description: this.product.description,
+                  amount: {
+                    currency_code: "USD",
+                    value: this.product.price
+                  }
+                }
+              ]
+            });
+          },
+          onApprove: async (data, actions) => {
+            const order = await actions.order.capture();
+            this.data;
+            this.paidFor = true;
+            console.log(order);
+          },
+          onError: err => {
+            console.log(err);
+          }
+        })
+        .render(this.$refs.paypal);
+    },
+
     fetchByParam() {
       firebase.firestore().collection("properties").get().then((snapshot) => {
             snapshot.docs.forEach(doc => {
@@ -262,6 +339,9 @@ export default {
       
     }
   },
+  components: {
+    
+  },
   computed: {
     getParam() {
       return this.$f7route.params.id
@@ -292,6 +372,30 @@ export default {
       padding-top: 0;
     }
 
+    .bank-icon {
+      color: #2B3D4C;
+      font-size: 4rem;
+      margin-bottom: 2rem;
+    }
+
+    .paypal-icon {
+      color: #2B3D4C;
+      font-size: 4rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .bank-detail {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .bank-detail div {
+      margin-bottom: 2.5rem;
+      text-align: center;
+    }
+
     .acc-title {
         font-size: 1.1rem;
         margin: 0;
@@ -300,10 +404,63 @@ export default {
 
 
     .acc-detail {
-        font-size: 1.6rem;
+        font-size: 1.8rem;
         font-weight: bolder;
         margin: 0;
         padding: 0;
+    }
+
+    .payment-text {
+      color: #2B3D4C;
+      font-size: 1.2rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .payment-price {
+      color: #2B3D4C;
+      font-size: 2.5rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .paid {
+      align-items: center;
+      background: rgba(234, 234, 234, 0.5 );
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin-bottom: 0.8rem;
+      padding: 0.5rem 0;
+    }
+
+    .payment-detail {
+      color: #2B3D4C;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .payment-head {
+      color: #2B3D4C;
+      text-align: center;
+    }
+
+    .payment-title {
+      color: #2B3D4C;
+      font-size: 1.1rem;
+    }
+
+    .payment-ref {
+      color: #2B3D4C;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .payment-footer {
+      color: #2B3D4C;
+      font-size: 0.8rem;
+      margin-top: 2.5rem;
+      text-align: center;
     }
 
     

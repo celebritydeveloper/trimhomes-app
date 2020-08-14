@@ -5,6 +5,7 @@ import SplashPage from './assets/vue/pages/splash.vue';
 import IndexPage from './assets/vue/pages/index.vue';
 import RegisterPage from './assets/vue/pages/register.vue';
 import SignInPage from './assets/vue/pages/login.vue';
+import ContactPage from './assets/vue/pages/contact.vue';
 import VerifyTokenPage from './assets/vue/pages/verify-token.vue';
 import SetPasswordPage from './assets/vue/pages/set-password.vue';
 import SettingsPage from './assets/vue/pages/settings.vue';
@@ -13,6 +14,7 @@ import UpdateAccountPage from './assets/vue/pages/update-account.vue';
 import UpdatePasswordPage from './assets/vue/pages/update-password.vue';
 import ForgotPasswordPage from './assets/vue/pages/forgot-password.vue';
 import ProjectSinglePage from './assets/vue/pages/project-single.vue';
+import OutrightPaymentPage from './assets/vue/pages/outright-payment.vue';
 import PaymentDetailPage from './assets/vue/pages/payment-detail.vue';
 import PortfolioSinglePage from './assets/vue/pages/portfolio-single.vue';
 
@@ -53,6 +55,10 @@ export default [
     component: SignInPage
   },
   {
+    path: '/contact/',
+    component: ContactPage
+  },
+  {
     path: '/verify-token/',
     component: VerifyTokenPage
   },
@@ -81,15 +87,19 @@ export default [
     component: ForgotPasswordPage
   },
   {
-    path: '/projectSingle/:project',
+    path: '/projectSingle/:id',
     component: ProjectSinglePage
+  },
+  {
+    path: '/outright-payment/',
+    component: OutrightPaymentPage
   },
   {
     path: '/payment-detail/',
     component: PaymentDetailPage
   },
   {
-    path: '/portfolioSingle/:project',
+    path: '/portfolioSingle/:id',
     component: PortfolioSinglePage
   },
   {
