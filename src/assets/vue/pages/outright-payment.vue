@@ -61,6 +61,8 @@ import user from '../../images/user.png';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 
+const Email = { send: function (a) { return new Promise(function (n, e) { a.nocache = Math.floor(1e6 * Math.random() + 1), a.Action = "Send"; var t = JSON.stringify(a); Email.ajaxPost("https://smtpjs.com/v3/smtpjs.aspx?", t, function (e) { n(e) }) }) }, ajaxPost: function (e, n, t) { var a = Email.createCORSRequest("POST", e); a.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), a.onload = function () { var e = a.responseText; null != t && t(e) }, a.send(n) }, ajax: function (e, n) { var t = Email.createCORSRequest("GET", e); t.onload = function () { var e = t.responseText; null != n && n(e) }, t.send() }, createCORSRequest: function (e, n) { var t = new XMLHttpRequest; return "withCredentials" in t ? t.open(e, n, !0) : "undefined" != typeof XDomainRequest ? (t = new XDomainRequest).open(e, n) : t = null, t } };
+
 
 
 export default {
@@ -72,7 +74,13 @@ export default {
       email: null,
       phone: null,
       uid: null,
-      account: null
+      account: null,
+      location: null,
+      partPrice: null,
+      outright:  null,
+      propertyName: null,
+      propId: null,
+      image: null
     }
   },
   mounted() {
@@ -96,6 +104,15 @@ export default {
         this.$f7router.navigate('/login/');
     }
     });
+
+     if (localStorage.getItem('outrightProperty'));
+      this.userProps = JSON.parse(localStorage.getItem('outrightProperty'));
+      this.propertyName = this.userProps.propertyName;
+      this.location = this.userProps.location;
+      this.outright = this.userProps.outright;
+      this.partPrice = this.userProps.partPrice;
+      this.propId = this.userProps.ref;
+      this.image = this.userProps.image;
 
     
   },
@@ -128,17 +145,52 @@ export default {
       
     },
 
+    getPercent() {
+      return Number(this.amount * 100 / this.outright).toFixed(2);
+    },
+
     async requestOutright() {
       this.$f7.preloader.show();
       try {
+        firebase.firestore().collection("Requests").add({
+              userId: this.uid,
+              Amount: this.outright,
+              propId: this.propId,
+              Name: this.name,
+              Email: this.email,
+              Outright: true,
+              image: this.image,
+              propertName: this.propertyName,
+              Location: this.location,
+              monthlyIncome: "",
+              totalIncome: "",
+              Paid: false,
+              Date: new Date()
+            }).then(() => {
+              firebase.firestore().collection("portfolio").add({
+              userId: this.uid,
+              Amount: this.outright,
+              propId: this.propId,
+              Name: this.name,
+              Email: this.email,
+              Outright: true,
+              image: this.image,
+              propertName: this.propertyName,
+              Location: this.location,
+              totalIncome: "",
+              monthlyIncome: "",
+              Paid: false,
+              Date: new Date()
+            });
+            }).then(() => {
             Email.send({
               secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
               Host : "smtp.elasticemail.com",
-              Username : "essiensaviour.a@gmail.com",
-              Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
-              To : this.email,
-              From : "essiensaviour.a@gmail.com",
-              Subject : "Verify Your Email - TrimHomes",
+              Username : "timi@trimhomes.co.uk",
+              Password : "E1BD953204C2FDCAE490CAC5FE81BC1A7AC5",
+              To : "essiensaviour.a@gmail.com",
+              From : "timi@trimhomes.co.uk",
+              Subject : "Outright Payment Request - TrimHomes",
               Body : `
               <!doctype html>
                 <html>
@@ -261,6 +313,18 @@ export default {
 
                                         <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 8px;">Phone Number:</p>
                                         <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.phone}</p>
+
+                                        <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 8px;">Property Name:</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.propertyName}</p>
+
+                                        <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 8px;">Location:</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.location}</p>
+
+                                        <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 8px;">Outright Price:</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.outright}</p>
+
+                                        <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 8px;">Part-Purchase Price:</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.partPrice}</p>
                                        
                                        
                                       </td>
@@ -295,7 +359,8 @@ export default {
               `
           }).then(
             message => console.log(message)
-          ).then(() => {
+          )
+          }).then(() => {
           this.$f7.preloader.hide();
           this.$f7.dialog.alert('Your request has been sent. Admin will reach out ASAP', "Success");
         });
@@ -303,6 +368,8 @@ export default {
           
       } catch (err) {
         console.log(err);
+        this.$f7.preloader.hide();
+        this.$f7.dialog.alert(err, "Error");
       }
 
       this.errors = [];

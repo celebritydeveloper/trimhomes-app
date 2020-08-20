@@ -12,7 +12,7 @@
       <f7-block-title class="confirm--title">Welcome {{name}}</f7-block-title>
       <p class="text">You can now set a password for your brand new account.</p>
     </div>
-    <form @submit.prevent="registerUser" no-store-data="true" class="list form-store-data" id="password-form">
+    <form @submit.prevent="registerUser" no-store-data="true" class="list form-store-data" id="password-for">
       <ul>
         <li class="item-content item-input disabled">
           <div class="item-inner">
@@ -26,7 +26,7 @@
           <div class="item-inner">
             <div class="item-title item-label">Create a strong password:</div>
             <div class="item-input-wrap">
-              <input name="password" v-model="password" type="password" validate pattern="[0-9]*" data-error-message="Must contain number and etters please!">
+              <input name="password" v-model="password" type="password"  data-error-message="Must contain number and letters please!">
               <span v-if="msg.password">{{msg.password}}</span>
               <span class="input-clear-button"></span>
             </div>
@@ -113,16 +113,19 @@ export default {
         try {
           firebase.auth().createUserWithEmailAndPassword(userInfo.email, this.password).then(users => {
           return firebase.firestore().collection("users").doc(users.user.uid).set({
+              fullName: userInfo.firstName + ' ' + userInfo.lastName,
               phone: userInfo.phone,
               address: userInfo.address,
               city: '',
               country: '',
+              email: userInfo.email,
               memorableNumber: userInfo.memorableNumber,
               bankName: '',
               bankNumber: '',
               bankAccountName: '',
               bankSortCode: '',
               postalCode: '',
+              image: userInfo.image,
               token: userInfo.token,
               verified: true,
               created: userInfo.created,
@@ -293,25 +296,9 @@ export default {
           );
           }).then(()=> {
             this.$f7.preloader.hide();
-            this.$f7router.navigate('/home1/');
+            this.$f7router.navigate('/');
           })
         })
-          //   if (results.length > 0) {
-          //     firebase.firestore().collection("users").doc(userId).update({
-          //     password: this.password,
-          //     }).then(() => {
-          //       console.log("Updated");
-          //     }).then(() => {
-          //     console.log("It worker");
-          //     this.$f7.preloader.hide();
-          //     this.$f7router.navigate('/home1/');
-          //   });
-              
-          //   }else {
-          //     this.$f7.preloader.hide();
-          //     this.$f7.dialog.alert("The Email you are setting password for does not Exists", "Error");
-          //   }
-          // })
           
       } catch (err) {
         this.$f7.preloader.hide();

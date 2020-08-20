@@ -3,7 +3,7 @@
   "display": "standalone",
   "name": "Trim Homes",
   "short_name": "Trim Homes",
-  "version": "com.example.template",
+  "version": "com.trimhomes.trimhomes",
   "description": "Trim Homes real estate app",
   "author": "Apache Cordova Team",
   "icons": [],

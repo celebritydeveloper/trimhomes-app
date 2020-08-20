@@ -193,6 +193,9 @@ export default {
           
       } catch (err) {
         console.log(err);
+        this.$f7.preloader.hide();
+        this.$f7.dialog.alert(err, "Error");
+        
       }
 
       this.errors = [];

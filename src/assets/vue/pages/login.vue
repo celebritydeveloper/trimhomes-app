@@ -86,7 +86,7 @@ export default {
             
         }).then(()=> {
             this.$f7.preloader.hide();
-            this.$f7router.navigate('/home1/');
+            this.$f7router.navigate('/');
         }).catch (error => {
           const errorCode = error.code;
           const errorMessage = error.message;

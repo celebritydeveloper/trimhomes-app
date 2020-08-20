@@ -80,7 +80,7 @@
           <div class="item-inner">
             <div class="item-title item-label">Memorable Number</div>
             <div class="item-input-wrap">
-              <input name="password" type="text" v-model="memorableNumber" required validate pattern="[0-9]*" data-error-message="Only numbers please!">
+              <input name="password" type="number" v-model="memorableNumber" required validate pattern="[0-9]*" data-error-message="Only numbers please!">
               <span class="input-clear-button"></span>
             </div>
           </div>
@@ -98,7 +98,7 @@
           <div class="item-inner">
             <div class="item-title item-label">How Did You Hear About Us?:</div>
             <div class="item-input-wrap input-dropdown-wrap">
-              <select v-model="referrer ">
+              <select v-model="referrer">
                 <option disabled selected>Please Select an Option</option>
                 <option value="Male">Family</option>
                 <option value="Female">Friend</option>
@@ -112,9 +112,9 @@
         </li>
         <li>
           <p class="terms">By clicking ‘Create Account’, you agree to our  
-          <f7-link class="forgot-btn" href="/forgot-password/">Terms &amp; Conditions</f7-link> 
+          <f7-link class="forgot-btn" href="https://trimhomes.co.uk/privacy-policy" external target="_blank">Terms &amp; Conditions</f7-link> 
           and our  
-          <f7-link class="forgot-btn" href="/forgot-password/"> Privacy Policy.</f7-link></p>
+          <f7-link class="forgot-btn" href="https://trimhomes.co.uk/privacy-policy" external target="_blank" > Privacy Policy.</f7-link></p>
           <f7-button class="register--btn" type="submit">Create Account</f7-button>
         </li>
         
@@ -170,7 +170,7 @@ export default {
       this.$f7.preloader.show();
       try {
 
-            const storageRef = firebase.storage().ref(`${this.imageData.name}`).put(this.imageData);
+            const storageRef = firebase.storage().ref().child('/users').child(`${this.imageData.name}`).put(this.imageData);
             storageRef.on(`state_changed`,snapshot => {
             this.uploadValue = (snapshot.bytesTransferred / snapshot.totalBytes)*100;
           }, error => {console.log(error.message)},

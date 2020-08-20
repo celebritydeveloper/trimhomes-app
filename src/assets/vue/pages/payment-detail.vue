@@ -6,13 +6,6 @@
         <img :src="logo" class="logo">
       </f7-nav-right>
     </f7-navbar>
-    <f7-toolbar tabbar labels :position="isBottom ? 'bottom' : 'top'">
-      <f7-link tab-link="#tab-1" tab-link-active text="Home" icon-ios="f7:house_fill" icon-aurora="f7:house_fill" icon-md="material:home"></f7-link>
-      <f7-link tab-link="#tab-2" text="Properties" icon-ios="f7:building_2_fill" icon-aurora="f7:building_2_fill" icon-md="material:local_offer"></f7-link>
-      <f7-link tab-link="#tab-3" text="My Portfolio" icon-ios="f7:briefcase" icon-aurora="f7:briefcase" icon-md="material:work"></f7-link>
-      <f7-link tab-link="#tab-4" text="Support" icon-ios="f7:question_circle" icon-aurora="f7:question_circle" icon-md="material:help_outline"></f7-link>
-      <f7-link tab-link="" raised panel-open="right" cover text="More" icon-ios="f7:bars" icon-aurora="f7:bars" icon-md="material:menu"></f7-link>
-    </f7-toolbar>
 
     <f7-panel class="panel" right resizable theme-dark>
     <f7-view>
@@ -28,13 +21,6 @@
 
     <f7-page-content class="confirm">
 
-        <f7-toolbar tabbar bottom>
-            <f7-link tab-link="#tab-1" tab-link-active>Bank Details</f7-link>
-            <f7-link tab-link="#tab-2">Paypal</f7-link>
-        </f7-toolbar>
-        <f7-tabs swipeable>
-            <f7-tab id="tab-1" class="page-content" tab-active>
-            <f7-block class="bank-detail">
                 <p><f7-icon class="bank-icon" ios="f7:placemark" aurora="f7:placemark" md="material:account_balance_wallet"></f7-icon></p>
                 <div>
                     <p class="acc-title">Account Number</p>
@@ -52,9 +38,7 @@
                     <p class="acc-title">Sort Code</p>
                     <p class="acc-detail">60-14-10</p>
                 </div>
-            </f7-block>
-            </f7-tab>
-            <f7-tab id="tab-2" class="page-content">
+            <!--<f7-tab id="tab-2" class="page-content">
             <f7-block>
             <div v-if="paidFor">
               <div class="paid">
@@ -80,8 +64,7 @@
             </div>
                 <div ref="paypal"></div>
             </f7-block>
-            </f7-tab>
-        </f7-tabs>
+            </f7-tab>-->
 
         <!-- Swipe to close demo sheet -->
         <f7-sheet ref="actionsOneGroup"
@@ -193,10 +176,10 @@ export default {
     });
 
     const script = document.createElement("script");
-    script.src =
-      "https://www.paypal.com/sdk/js?client-id=ATLlN-1s3VyZQVqlPp5MV1Mf_uCCKKEdC1sQAdVlI-OcRi7NYietzy_rCx45wrYxdBeQ0-G5kEeUjQEA";
-    script.addEventListener("load", this.setLoaded);
-    document.body.appendChild(script);
+    // script.src =
+    //   "https://www.paypal.com/sdk/js?client-id=ATLlN-1s3VyZQVqlPp5MV1Mf_uCCKKEdC1sQAdVlI-OcRi7NYietzy_rCx45wrYxdBeQ0-G5kEeUjQEA";
+    // script.addEventListener("load", this.setLoaded);
+    // document.body.appendChild(script);
   },
   components: {
       f7Sheet,
@@ -354,6 +337,7 @@ export default {
 <style scoped>
     body {
         font-family: 'Montserrat', sans-serif;
+        overflow: hidden;
     }
 
     .home .navbar .navbar-bg {
@@ -370,6 +354,8 @@ export default {
 
     .confirm {
       padding-top: 0;
+      margin-top: 3rem;
+      text-align: center;
     }
 
     .bank-icon {

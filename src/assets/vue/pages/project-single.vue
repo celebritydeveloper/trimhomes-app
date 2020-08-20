@@ -61,7 +61,7 @@
                 <p class="project-info-text">Buy this entire property from TRIM HOMES for full ownership</p>
                 <div class="price">
                   <span class="project-price">{{convertCurrency(currentProperty.Outright)}}</span>
-                  <f7-link href="/outright-payment/" class="register--btn">Buy Outright</f7-link>
+                  <f7-link @click="makeOutright" class="register--btn">Buy Outright</f7-link>
                 </div>
             </div>
             <div class="project-info">
@@ -216,7 +216,29 @@ export default {
     },
     convertCurrency(value) {
             return new Intl.NumberFormat('en-EN', { style: 'currency', currency: 'GBP' }).format(value);
-        },
+    },
+
+    async makeOutright() {
+      this.$f7.preloader.show();
+      try {
+        const outrightProperty = {
+              ref: this.userId,
+              propertyName: this.currentProperty.Title,
+              location: this.currentProperty.Location,
+              outright: this.currentProperty.Outright,
+              partPrice: this.currentProperty.PartPrice,
+              amount: this.amount,
+              image: this.currentProperty.image,
+          }
+        localStorage.setItem('outrightProperty', JSON.stringify(outrightProperty))
+          this.$f7.preloader.hide();
+          this.$f7router.navigate("/outright-payment/");
+        
+      }  catch (error) {
+        console.log(error);
+        this.$f7.dialog.alert(error.message, "Error");
+      }
+    },
 
     async makeRequest() {
         this.$f7.preloader.show();
@@ -232,7 +254,9 @@ export default {
               Name: this.userName,
               Email: this.emailAddress,
               Amount: this.amount,
+              image: this.currentProperty.image,
               monthlyIncome: this.getPercent(),
+              totalIncome: "",
               Paid: false,
               Date: new Date()
             }).then(() => {
@@ -243,6 +267,10 @@ export default {
               Email: this.emailAddress,
               Amount: this.amount,
               monthlyIncome: this.getPercent(),
+              image: this.currentProperty.image,
+              propertName: this.currentProperty.Title,
+              Location: this.currentProperty.Location,
+              totalIncome: "",
               Paid: false,
               Date: new Date()
             });
@@ -425,8 +453,6 @@ export default {
                     </table>
                   </body>
                 </html>
-                <p>Thank you so much for investing in the property.</p>
-                <p>Admin will process your request and reach out to you via a call or email within 24hours. </p>
                 `
             }).then(
               message => console.log(message)
@@ -438,7 +464,7 @@ export default {
                 Username : "essiensaviour.a@gmail.com",
                 Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
                 To : "essiensaviour.a@gmail.com",
-                From : "essiensaviour.a@gmail.com",
+                From : "essien@theboringcreatives.com",
                 Subject : "TrimHomes - Investment Request",
                 Body : `
                 <!doctype html>
@@ -446,7 +472,7 @@ export default {
                   <head>
                     <meta name="viewport" content="width=device-width">
                     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-                    <title>TrimHomes Welcome Email</title>
+                    <title>Request Email</title>
                     <style>
                     /* -------------------------------------
                         INLINED WITH htmlemail.io/inline
@@ -620,6 +646,7 @@ export default {
           
       } catch (error) {
         console.log(error);
+        this.$f7.preloader.hide();
         this.$f7.dialog.alert(error.message, "Error");
       }
       return true;

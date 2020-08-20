@@ -6,25 +6,7 @@
         <img :src="logo" class="logo">
       </f7-nav-right>
     </f7-navbar>
-    <f7-toolbar tabbar labels :position="isBottom ? 'bottom' : 'top'">
-      <f7-link tab-link="#tab-1" tab-link-active text="Home" icon-ios="f7:house_fill" icon-aurora="f7:house_fill" icon-md="material:home"></f7-link>
-      <f7-link tab-link="#tab-2" text="Properties" icon-ios="f7:building_2_fill" icon-aurora="f7:building_2_fill" icon-md="material:local_offer"></f7-link>
-      <f7-link tab-link="#tab-3" text="My Portfolio" icon-ios="f7:briefcase" icon-aurora="f7:briefcase" icon-md="material:work"></f7-link>
-      <f7-link tab-link="#tab-4" text="Support" icon-ios="f7:question_circle" icon-aurora="f7:question_circle" icon-md="material:help_outline"></f7-link>
-      <f7-link tab-link="" raised panel-open="right" cover text="More" icon-ios="f7:bars" icon-aurora="f7:bars" icon-md="material:menu"></f7-link>
-    </f7-toolbar>
 
-    <f7-panel class="panel" right resizable theme-dark>
-    <f7-view>
-      <f7-page>
-        <f7-link class="panel-close" panel-close><f7-icon ios="f7:close" aurora="f7:close" md="material:close" panel-close></f7-icon></f7-link>
-        
-        <f7-link class="panel-link" href="/">My Profile</f7-link>
-        <f7-link class="panel-link" href="/">My Earnings</f7-link>
-        <f7-link class="panel-link" href="/">Settings</f7-link>
-      </f7-page>
-    </f7-view>
-  </f7-panel>
 
     <f7-page-content class="confirm">
 
@@ -34,7 +16,7 @@
 
         <div class="project-top">
             <p class="project-type">
-                {{currentProperty.Title}}
+                {{currentProperty.propertName}}
                 <!--<span class="project-location" v-for="(location, index) in currentProperty.Location" :key="index">
                   {{currentProperty.Location}},
                   </span>-->
@@ -57,19 +39,27 @@
 
          <f7-block class="project-info-block">
              <div class="project-info">
-                <p class="project-info-title">Outright Purchase</p>
-                <p class="project-info-text">Buy this entire property from TRIM HOMES for full ownership</p>
+                <p class="project-info-title">Investment Amount</p>
+                <p class="project-info-text">This is the amount you invested in this property.</p>
                 <div class="price">
-                  <span class="project-price">{{convertCurrency(currentProperty.Outright)}}</span>
+                  <span class="project-price">{{convertCurrency(currentProperty.Amount)}}</span>
                 </div>
-            </div>
+              </div>
+
+              <div class="project-info">
+                <p class="project-info-title">Total Income</p>
+                <p class="project-info-text">This is the total income you have accumulated overtime.</p>
+                <div class="price">
+                  <span class="project-price">{{convertCurrency(currentProperty.monthlyIncome)}}</span>
+                </div>
+              </div>
 
             <div class="action-btn">
-              <button class="register--white" @click="$refs.actionsOneGroup.open()">
+              <button class="register--white" @click="sellProperty">
                 <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:card_travel"></f7-icon>
                 Sell Property
                 </button>
-              <button class="register--btn" @click="$refs.actionsOneGroup.open()">
+              <button class="register--btn" @click="widthdraw">
                 <f7-icon class="info-icon" ios="f7:creditcard" aurora="f7:creditcard" md="material:card_travel"></f7-icon>
                   Withdraw
                 </button>
@@ -142,6 +132,8 @@ export default {
       properties: [],
       currentProperty: {},
       userName,
+      name: null,
+      email:  null
     }
   },
   mounted() {
@@ -159,7 +151,7 @@ export default {
 
      if (user != null) {
       this.name = user.displayName;
-      // email = user.email;
+      this.email = user.email;
       // photoUrl = user.photoURL;
       // emailVerified = user.emailVerified;
       // uid = user.uid;
@@ -182,103 +174,388 @@ export default {
       });
     },
     fetchByParam() {
-      firebase.firestore().collection("properties").get().then((snapshot) => {
-            snapshot.docs.forEach(doc => {
-              data = doc;
-              this.properties.push(data);
-              //console.log(this.properties);
-            })
-        }).then(() => {
-          for (let i = 0; i < this.properties.length; i++) {
-        if( this.properties.id == this.getParam) {
-            console.log("True");
-            this.currentProperty = this.properties[i][0].data();
-            console.log(this.properties[i][0].data());
-            console.log(this.currentProperty);
-          }    
-        }
+      firebase.firestore().collection("portfolio").where(firebase.firestore.FieldPath.documentId(), "==", this.getParam).get().then((snapshot) => {
+            let results = snapshot.docs.map(doc => {
+              this.userId = doc.id;
+              this.property = doc.data();
+            });
+
+            this.currentProperty = this.property;
         })
     },
     convertCurrency(value) {
             return new Intl.NumberFormat('en-EN', { style: 'currency', currency: 'GBP' }).format(value);
-        },
+    },
 
-    async makeRequest() {
-        this.$f7.preloader.show();
-        try {
-          if(this.amount.trim() !== "" && this.amount > 0) {
-            const user = firebase.auth().currentUser;
-          if(user != null) {
-            this.userName = user.displayName;
-            this.emailAddress = user.email;
-
-            firebase.firestore().collection("Requests").add({
-              Name: this.userName,
-              Email: this.emailAddress,
-              Amount: this.amount,
-              Property: this.currentProperty.Title,
-              Price: this.currentProperty.SalePrice,
-              Location: this.currentProperty.Location,
-              Date: new Date()
-            }).then(() => {
-              Email.send({
-                secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
-                Host : "smtp.elasticemail.com",
-                Username : "essiensaviour.a@gmail.com",
-                Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
-                To : this.emailAddress,
-                From : "essiensaviour.a@gmail.com",
-                Subject : "TrimHomes - Investment Request",
-                Body : `
-                <p>Thank you so much for investing in the property.</p>
-                <p>Admin will process your request and reach out to you via a call or email within 24hours. </p>
-                `
-            }).then(
-              message => console.log(message)
-            );
-            }).then(() => {
-              Email.send({
+    async sellProperty() {
+      this.$f7.preloader.show();
+      try {
+        Email.send({
                 secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
                 Host : "smtp.elasticemail.com",
                 Username : "essiensaviour.a@gmail.com",
                 Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
                 To : "essiensaviour.a@gmail.com",
                 From : "essiensaviour.a@gmail.com",
-                Subject : "TrimHomes - Investment Request",
+                Subject : "TrimHomes - Sell Request",
                 Body : `
-                <p>An investment opportunity just popped in.</p>
-                <p> <strong>${this.userName}</strong> has just invested <strong>$${this.amount}</strong>. Here is their Email Address <strong>${this.emailAddress}</strong></p>
-                <p>Property Details</strong></p>
-                <p>${this.currentProperty.Title}, ${this.currentProperty.SalePrice}, ${this.currentProperty.Location}</p>
+                <!doctype html>
+                <html>
+                  <head>
+                    <meta name="viewport" content="width=device-width">
+                    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+                    <title>TrimHomes Sell Request Email</title>
+                    <style>
+                    /* -------------------------------------
+                        INLINED WITH htmlemail.io/inline
+                    ------------------------------------- */
+                    /* -------------------------------------
+                        RESPONSIVE AND MOBILE FRIENDLY STYLES
+                    ------------------------------------- */
+                    @media only screen and (max-width: 620px) {
+                      table[class=body] h1 {
+                        font-size: 28px !important;
+                        margin-bottom: 10px !important;
+                      }
+                      table[class=body] p,
+                            table[class=body] ul,
+                            table[class=body] ol,
+                            table[class=body] td,
+                            table[class=body] span,
+                            table[class=body] a {
+                        font-size: 16px !important;
+                      }
+                      table[class=body] .wrapper,
+                            table[class=body] .article {
+                        padding: 10px !important;
+                      }
+                      table[class=body] .content {
+                        padding: 0 !important;
+                      }
+                      table[class=body] .container {
+                        padding: 0 !important;
+                        width: 100% !important;
+                      }
+                      table[class=body] .main {
+                        border-left-width: 0 !important;
+                        border-radius: 0 !important;
+                        border-right-width: 0 !important;
+                      }
+                      table[class=body] .btn table {
+                        width: 100% !important;
+                      }
+                      table[class=body] .btn a {
+                        width: 100% !important;
+                      }
+                      table[class=body] .img-responsive {
+                        height: auto !important;
+                        max-width: 100% !important;
+                        width: auto !important;
+                      }
+                    }
+
+                    /* -------------------------------------
+                        PRESERVE THESE STYLES IN THE HEAD
+                    ------------------------------------- */
+                    @media all {
+                      .ExternalClass {
+                        width: 100%;
+                      }
+                      .ExternalClass,
+                            .ExternalClass p,
+                            .ExternalClass span,
+                            .ExternalClass font,
+                            .ExternalClass td,
+                            .ExternalClass div {
+                        line-height: 100%;
+                      }
+                      .apple-link a {
+                        color: inherit !important;
+                        font-family: inherit !important;
+                        font-size: inherit !important;
+                        font-weight: inherit !important;
+                        line-height: inherit !important;
+                        text-decoration: none !important;
+                      }
+                      #MessageViewBody a {
+                        color: inherit;
+                        text-decoration: none;
+                        font-size: inherit;
+                        font-family: inherit;
+                        font-weight: inherit;
+                        line-height: inherit;
+                      }
+                      .btn-primary table td:hover {
+                        background-color: #34495e !important;
+                      }
+                      .btn-primary a:hover {
+                        background-color: #34495e !important;
+                        border-color: #34495e !important;
+                      }
+                    }
+                    </style>
+                  </head>
+                  <body class="" style="background-color: #f6f6f6; font-family: sans-serif; -webkit-font-smoothing: antialiased; font-size: 14px; line-height: 1.4; margin: 0; padding: 0; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;">
+                    <table border="0" cellpadding="0" cellspacing="0" class="body" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background-color: #f6f6f6;">
+                      <tr>
+                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">&nbsp;</td>
+                        <td class="container" style="font-family: sans-serif; font-size: 14px; vertical-align: top; display: block; Margin: 0 auto; max-width: 580px; padding: 10px; width: 580px;">
+                          <div class="content" style="box-sizing: border-box; display: block; Margin: 0 auto; max-width: 580px; padding: 10px;">
+
+                            <!-- START CENTERED WHITE CONTAINER -->
+                            <table class="main" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background: #ffffff; border-radius: 3px;">
+
+                              <!-- START MAIN CONTENT AREA -->
+                              <tr>
+                                <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;">
+                                  <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
+                                    <tr>
+                                      <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
+                                      <p style="background: #2B3D4C; padding: 0.2rem 0; text-align: center;"><img src="https://lirp-cdn.multiscreensite.com/7e157610/dms3rep/multi/opt/3-68f7e3f4-218w.png" style="width: 120px;"></p>
+                                      <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Hello, Timi</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;"><strong>${this.name}</strong> has made a request to sell their property. Below are the property details.</p>
+
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Here is their email <strong>${this.email}</strong> so you can reach out to them.</p>
+
+                                        <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 8px;">Property Title:</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.currentProperty.propertName}</p>
+
+                                        <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 8px;">Property Location:</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.currentProperty.Location}</p>
+
+                                        <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 8px;">Invested Amount:</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.currentProperty.Amount}</p>
+
+                                        <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 8px;">Total Income:</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.currentProperty.monthlyIncome}</p>
+                                       
+                                       
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+
+                            <!-- END MAIN CONTENT AREA -->
+                            </table>
+
+                            <!-- START FOOTER -->
+                            <div class="footer" style="clear: both; Margin-top: 10px; text-align: center; width: 100%;">
+                              <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
+                                <tr>
+                                  <td class="content-block" style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; font-size: 12px; color: #999999; text-align: center;">
+                                    <span class="apple-link" style="color: #999999; font-size: 12px; text-align: center;">12 Streatham Place, Bradwell Common, Milton Keynes, England MK13 8RG</span>
+                                  </td>
+                                </tr>
+                              </table>
+                            </div>
+                            <!-- END FOOTER -->
+
+                          <!-- END CENTERED WHITE CONTAINER -->
+                          </div>
+                        </td>
+                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">&nbsp;</td>
+                      </tr>
+                    </table>
+                  </body>
+                </html>
                 `
             }).then(
-              message => console.log(message)
-            );
-            this.$f7.dialog.alert(`You have successfully invested in this property`, "Success");
-            this.$refs.actionsOneGroup.close();
-            }).then(() => {
-            this.$f7.preloader.hide();
-          });
-          }else {
-            this.$f7.preloader.hide();
-            this.$f7.dialog.alert(`You are not a registered user`, "Error");
-            this.$f7router.navigate('/register/');
-          }
-
-          }else {
-            this.$f7.preloader.hide();
-            this.$f7.dialog.alert(`Amount must not be empty of less than $1`, "Error");
-          }
-          
-            
-          
-      } catch (error) {
+              this.$f7.preloader.hide(),
+              this.$f7.dialog.alert("Your funds will be credited to your account in 4 weeks", "Sale Successful"),
+          );
+        
+      }  catch (error) {
         console.log(error);
+        this.$f7.preloader.hide();
         this.$f7.dialog.alert(error.message, "Error");
       }
-      return true;
-      
-    }
+    },
+
+    async widthdraw() {
+      this.$f7.preloader.show();
+      try {
+        Email.send({
+                secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
+                Host : "smtp.elasticemail.com",
+                Username : "essiensaviour.a@gmail.com",
+                Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
+                To : "essiensaviour.a@gmail.com",
+                From : "essiensaviour.a@gmail.com",
+                Subject : "TrimHomes - Withdrawal Request",
+                Body : `
+                <!doctype html>
+                <html>
+                  <head>
+                    <meta name="viewport" content="width=device-width">
+                    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+                    <title>TrimHomes Widthdraw Request Email</title>
+                    <style>
+                    /* -------------------------------------
+                        INLINED WITH htmlemail.io/inline
+                    ------------------------------------- */
+                    /* -------------------------------------
+                        RESPONSIVE AND MOBILE FRIENDLY STYLES
+                    ------------------------------------- */
+                    @media only screen and (max-width: 620px) {
+                      table[class=body] h1 {
+                        font-size: 28px !important;
+                        margin-bottom: 10px !important;
+                      }
+                      table[class=body] p,
+                            table[class=body] ul,
+                            table[class=body] ol,
+                            table[class=body] td,
+                            table[class=body] span,
+                            table[class=body] a {
+                        font-size: 16px !important;
+                      }
+                      table[class=body] .wrapper,
+                            table[class=body] .article {
+                        padding: 10px !important;
+                      }
+                      table[class=body] .content {
+                        padding: 0 !important;
+                      }
+                      table[class=body] .container {
+                        padding: 0 !important;
+                        width: 100% !important;
+                      }
+                      table[class=body] .main {
+                        border-left-width: 0 !important;
+                        border-radius: 0 !important;
+                        border-right-width: 0 !important;
+                      }
+                      table[class=body] .btn table {
+                        width: 100% !important;
+                      }
+                      table[class=body] .btn a {
+                        width: 100% !important;
+                      }
+                      table[class=body] .img-responsive {
+                        height: auto !important;
+                        max-width: 100% !important;
+                        width: auto !important;
+                      }
+                    }
+
+                    /* -------------------------------------
+                        PRESERVE THESE STYLES IN THE HEAD
+                    ------------------------------------- */
+                    @media all {
+                      .ExternalClass {
+                        width: 100%;
+                      }
+                      .ExternalClass,
+                            .ExternalClass p,
+                            .ExternalClass span,
+                            .ExternalClass font,
+                            .ExternalClass td,
+                            .ExternalClass div {
+                        line-height: 100%;
+                      }
+                      .apple-link a {
+                        color: inherit !important;
+                        font-family: inherit !important;
+                        font-size: inherit !important;
+                        font-weight: inherit !important;
+                        line-height: inherit !important;
+                        text-decoration: none !important;
+                      }
+                      #MessageViewBody a {
+                        color: inherit;
+                        text-decoration: none;
+                        font-size: inherit;
+                        font-family: inherit;
+                        font-weight: inherit;
+                        line-height: inherit;
+                      }
+                      .btn-primary table td:hover {
+                        background-color: #34495e !important;
+                      }
+                      .btn-primary a:hover {
+                        background-color: #34495e !important;
+                        border-color: #34495e !important;
+                      }
+                    }
+                    </style>
+                  </head>
+                  <body class="" style="background-color: #f6f6f6; font-family: sans-serif; -webkit-font-smoothing: antialiased; font-size: 14px; line-height: 1.4; margin: 0; padding: 0; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;">
+                    <table border="0" cellpadding="0" cellspacing="0" class="body" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background-color: #f6f6f6;">
+                      <tr>
+                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">&nbsp;</td>
+                        <td class="container" style="font-family: sans-serif; font-size: 14px; vertical-align: top; display: block; Margin: 0 auto; max-width: 580px; padding: 10px; width: 580px;">
+                          <div class="content" style="box-sizing: border-box; display: block; Margin: 0 auto; max-width: 580px; padding: 10px;">
+
+                            <!-- START CENTERED WHITE CONTAINER -->
+                            <table class="main" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background: #ffffff; border-radius: 3px;">
+
+                              <!-- START MAIN CONTENT AREA -->
+                              <tr>
+                                <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;">
+                                  <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
+                                    <tr>
+                                      <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
+                                      <p style="background: #2B3D4C; padding: 0.2rem 0; text-align: center;"><img src="https://lirp-cdn.multiscreensite.com/7e157610/dms3rep/multi/opt/3-68f7e3f4-218w.png" style="width: 120px;"></p>
+                                      <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Hello, Timi</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;"><strong>${this.name}</strong> has made a request to widthdraw their property. Below are the property details.</p>
+
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Here is their email <strong>${this.email}</strong> so you can reach out to them.</p>
+
+                                        <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 8px;">Property Title:</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.currentProperty.propertName}</p>
+
+                                        <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 8px;">Property Location:</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.currentProperty.Location}</p>
+
+                                        <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 8px;">Invested Amount:</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.currentProperty.Amount}</p>
+
+                                        <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 8px;">Total Income:</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">${this.currentProperty.monthlyIncome}</p>
+                                       
+                                       
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </td>
+                              </tr>
+
+                            <!-- END MAIN CONTENT AREA -->
+                            </table>
+
+                            <!-- START FOOTER -->
+                            <div class="footer" style="clear: both; Margin-top: 10px; text-align: center; width: 100%;">
+                              <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
+                                <tr>
+                                  <td class="content-block" style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; font-size: 12px; color: #999999; text-align: center;">
+                                    <span class="apple-link" style="color: #999999; font-size: 12px; text-align: center;">12 Streatham Place, Bradwell Common, Milton Keynes, England MK13 8RG</span>
+                                  </td>
+                                </tr>
+                              </table>
+                            </div>
+                            <!-- END FOOTER -->
+
+                          <!-- END CENTERED WHITE CONTAINER -->
+                          </div>
+                        </td>
+                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">&nbsp;</td>
+                      </tr>
+                    </table>
+                  </body>
+                </html>
+                `
+            }).then(
+              this.$f7.preloader.hide(),
+              this.$f7.dialog.alert("Your request has been recorded, Admin will contact you shortly", "Success"),
+          );
+        
+      }  catch (error) {
+        console.log(error);
+        this.$f7.preloader.hide();
+        this.$f7.dialog.alert(error.message, "Error");
+      }
+    },
   },
   computed: {
     getParam() {

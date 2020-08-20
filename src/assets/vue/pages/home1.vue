@@ -1,5 +1,5 @@
 <template>
-  <f7-page class="home" ptr @ptr:refresh="loadMore">
+  <f7-page class="home">
     <f7-navbar class="home--nav">
     <f7-nav-left>
         Trimhomes
@@ -8,15 +8,13 @@
         <img :src="logo" class="logo">
       </f7-nav-right>
     </f7-navbar>
-    <f7-toolbar tabbar labels :position="isBottom ? 'bottom' : 'top'">
+    <f7-toolbar tabs labels :position="isBottom ? 'bottom' : 'top'">
       <f7-link tab-link="#tab-1" tab-link-active text="Home" icon-ios="f7:house_fill" icon-aurora="f7:house_fill" icon-md="material:home"></f7-link>
       <f7-link tab-link="#tab-2" text="Properties" icon-ios="f7:building_2_fill" icon-aurora="f7:building_2_fill" icon-md="material:local_offer"></f7-link>
-      <f7-link tab-link="#tab-3" text="My Portfolio" icon-ios="f7:briefcase" icon-aurora="f7:briefcase" icon-md="material:work"></f7-link>
-      <f7-link tab-link="#tab-4" text="Support" icon-ios="f7:question_circle" icon-aurora="f7:question_circle" icon-md="material:help_outline"></f7-link>
+      <f7-link tab-link="#tab-3" text="Portfolio" icon-ios="f7:briefcase" icon-aurora="f7:briefcase" icon-md="material:work"></f7-link>
       <f7-link tab-link="" raised panel-open="right" cover text="More" icon-ios="f7:bars" icon-aurora="f7:bars" icon-md="material:menu"></f7-link>
     </f7-toolbar>
-
-    <f7-panel class="panel" right resizable theme-dark>
+<f7-panel class="panel" right resizable theme-dark>
     <f7-view>
       <f7-page>
         <f7-link class="panel-close" panel-close @click="homepage"><f7-icon ios="f7:close" aurora="f7:close" md="material:close"></f7-icon></f7-link>
@@ -58,7 +56,7 @@
       <f7-tab id="tab-2" class="page-conten" name="Properties">
           <Project />
       </f7-tab>
-      <f7-tab id="tab-3" class="page-conten" name="My Portfolio">
+      <f7-tab id="tab-3" class="page-conten" name="Portfolio">
         <div class="card card-outline user-card">
           <div class="card-header user-detail">
             <img :src="image" alt="" class="user-image">
@@ -67,22 +65,29 @@
           </div>
           <div class="card-content invest-list">
             <div class="invest-item">
-              <p class="invest-amount">{{convertCurrency(5000)}}</p>
+              <p class="invest-amount">{{convertCurrency(total)}}</p>
               <p class="invest-title">Investment</p>
             </div>
             <div class="invest-item">
-              <p class="invest-amount">{{convertCurrency(55)}}</p>
+              <p class="invest-amount">{{convertCurrency(parseInt(totalIncome))}}</p>
               <p class="invest-title">Monthly Income</p>
             </div>
           </div>
         </div>
-        <Portfolio />
-      </f7-tab>
-
-      <f7-tab id="tab-4" class="page-content">
-        <f7-block>
-          <p>Support Form</p>
-        </f7-block>
+        <f7-list  media-list class="listing">
+        <f7-list-item
+                    v-for="property in properties" 
+                    :key="property.id"
+                    class="listing-item"
+                    :link="`/portfolioSingle/${property.id}`"
+                    :title="`${property.data().propertName + ', ' + property.data().Location}`"
+                    :text="`${convertCurrency(property.data().Amount) + ' - Invested Amount'}`"
+                    icon-ios="f7:briefcase" icon-aurora="f7:briefcase" icon-md="material:work"
+                >
+                    <img slot="media" :src="property.data().image" height="80" width="80" />
+                    <f7-icon slot="media" icon="demo-list-icon"></f7-icon>
+            </f7-list-item>
+        </f7-list>
       </f7-tab>
     </f7-tabs>
     </f7-page-content>
@@ -118,16 +123,53 @@ export default {
       city: null,
       country: null,
       portfolioId: null,
-      singlePortfolio: null
+      portfolioId: null,
+      singlePortfolio: null,
+      amount: null,
+      total: null,
+      paid:  null,
+      income: null,
+      totalIncome: null,
+      propsId: null,
+      userId: null,
+      pay: null
     }
   },
+   mounted(){
+    firebase.auth().onAuthStateChanged(users => {
+    if(users) {
+        const user = firebase.auth().currentUser;
+      let name, email, photoUrl, uid, emailVerified;
+
+     if (user != null) {
+      this.name = user.displayName;
+      // email = user.email;
+      this.image = user.photoURL;
+      // emailVerified = user.emailVerified;
+      this.id = user.uid;
+    }else {
+      this.$f7router.navigate('/login/');
+    }
+    }else {
+        this.$f7router.navigate('/login/');
+        console.log("User logged out");
+    }
+
+    this.getProfile();
+    this.getInvestment();
+});
+
+    
+    
+    // axios.get('https://firestore.googleapis.com/v1/projects/trimhomesapp/databases/(default)/documents/properties')
+    // .then((response) => data = response);
+    // .then(() => this.properties.push(data))
+    // .then(() => console.log(data))
+
+    
+
+  },
   methods: {
-     loadMore(done) {
-       setTimeout(() => {
-       this.$f7router.navigate('/home1/');
-       done();
-       }, 1000);
-    },
 
     convertCurrency(value) {
         return new Intl.NumberFormat('en-EN', { style: 'currency', currency: 'GBP' }).format(value);
@@ -142,7 +184,7 @@ export default {
     },
 
     homepage() {
-        this.$f7router.navigate('/home1/');
+        this.$f7router.navigate('/');
     },
 
     settings() {
@@ -176,14 +218,19 @@ export default {
       
     },
 
-    async getProperty() {
+    async getInvestment() {
         try {
-          const portfolio = firebase.firestore().collection("portfolio").where('userId', "==", this.id).get().then((snapshot) => {
-            let results = snapshot.docs.map(doc => {
-              this.portfolioId = doc.id;
-              this.singlePortfolio = doc.data();
-            });
-            console.log(this.singlePortfolio);
+          firebase.firestore().collection("portfolio").where("userId", "==", this.id).where("Paid", "==", true).get().then((snapshot) => {
+            snapshot.docs.forEach(doc => {
+              this.propsId = doc.data().propId;
+              this.paid = doc.data().Amount;
+              this.total += parseFloat(this.paid);
+              this.income = doc.data().monthlyIncome;
+              this.totalIncome += parseFloat(this.income);
+              this.properties.push(doc);
+                console.log(this.properties);
+            });            
+
             });
           
       } catch (err) {
@@ -191,7 +238,9 @@ export default {
       }
       return true;
       
-    },
+      },
+
+      
 
   },
   components: {
@@ -199,40 +248,7 @@ export default {
     Portfolio
   },
 
-  mounted(){
-    firebase.auth().onAuthStateChanged(users => {
-    if(users) {
-        const user = firebase.auth().currentUser;
-      let name, email, photoUrl, uid, emailVerified;
-
-     if (user != null) {
-      this.name = user.displayName;
-      // email = user.email;
-      this.image = user.photoURL;
-      // emailVerified = user.emailVerified;
-      this.id = user.uid;
-    }else {
-      this.$f7router.navigate('/login/');
-    }
-    }else {
-        this.$f7router.navigate('/login/');
-        console.log("User logged out");
-    }
-
-    this.getProfile();
-    this.getProperty();
-});
-
-    
-    
-    // axios.get('https://firestore.googleapis.com/v1/projects/trimhomesapp/databases/(default)/documents/properties')
-    // .then((response) => data = response);
-    // .then(() => this.properties.push(data))
-    // .then(() => console.log(data))
-
-    
-
-  }
+ 
 }
 </script>
 

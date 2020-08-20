@@ -8,7 +8,7 @@
   },
   "installed_plugins": {
     "cordova-plugin-whitelist": {
-      "PACKAGE_NAME": "com.example.template"
+      "PACKAGE_NAME": "com.trimhomes.trimhomes"
     }
   },
   "dependent_plugins": {}

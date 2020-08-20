@@ -67,47 +67,10 @@ export default {
       this.$f7.preloader.show();
       if(this.email.trim() !== "") {
         try {
-          firebase.firestore().collection("users").where("phone", "==", userInfo.phone).get().then((snapshot) =>{
-            let results = snapshot.docs.map(doc => {
-              userId = doc.id;
-              console.log(doc.id);
-            });
-            if (results.length > 0) {
-              firebase.firestore().collection("users").doc(userId).update({
-              token: otpCode,
-              }).then(() => {
-                Email.send({
-                secureToken: "6d7fcff4-680b-48bd-a69c-43f92f919962",
-                Host : "smtp.elasticemail.com",
-                Username : "essiensaviour.a@gmail.com",
-                Password : "2B06ACCA5856C1F7EE2F6CFB5BCC7C4218C6",
-                To : this.email,
-                From : "essiensaviour.a@gmail.com",
-                Subject : "Verify Your Email - TrimHomes",
-                Body : `
-                <p>Set a new password</p>
-                <p>Here is your token <strong>${otpCode}</strong> to setup a new password. </p>
-                `
-          }).then(
-            message => console.log(message)
-          );
-          }).then(() => {
-            if(JSON.parse(localStorage.getItem("trimhomesUser"))) {
-                let userToken = JSON.parse(localStorage.getItem('trimhomesUser'));
-                userToken.token = otpCode;
-                localStorage.setItem("trimhomesUser", JSON.stringify(userToken));
-              }
-          this.$f7.preloader.hide();
-        }).then(() => {
-              console.log("It worker");
-              this.$f7.preloader.hide();
-              this.$f7router.navigate('/set-password/');
-            });
-              
-            }else {
-              this.$f7.preloader.hide();
-              this.$f7.dialog.alert("The Email you are setting password for does not Exists", "Error");
-            }
+          firebase.auth().sendPasswordResetEmail(this.email).then(() => {
+            this.$f7.preloader.hide();
+            this.$f7.dialog.alert(`A password reset link has been sent to ${this.email}`, "Success");
+            this.email = "";
           })
           
       } catch (err) {
